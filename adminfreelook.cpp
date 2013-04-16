@@ -3,7 +3,7 @@
 #include "chooker.h"
 
 CHooker		HookerClass;
-CHooker*		Hooker = &HookerClass;
+CHooker*	Hooker = &HookerClass;
 
 cvar_t amx_adminfreelook		= { "amx_adminfreelook"		, "1", 1, 1.0 };
 cvar_t amx_adminfreelookflag	= { "amx_adminfreelookflag"	, "d" };
@@ -54,7 +54,7 @@ void OnMetaAttach()
 		FuncIsvalidTargetOrig	= Hooker->MemorySearch< FuncIsValidTarget>	( "0x8B,*,*,*,0x56,0x8B,*,0x8B,*,*,*,*,*,0x3B"	, ( void* )MDLL_Spawn, FALSE );
 		FuncSetModetOrig		= Hooker->MemorySearch< FuncSetMode>		( "0x83,*,*,0x55,0x8B,*,*,*,0x56,0x8B,*,0x8B"	, ( void* )MDLL_Spawn, FALSE );
 	#else
-		FuncIsvaludTargetOrig	= Hooker->MemorySearch< FuncIsValidTarget>	( "_ZN11CBasePlayer22Observer_IsValidTargetEib"	, ( void* )MDLL_Spawn, TRUE );
+		FuncIsvalidTargetOrig	= Hooker->MemorySearch< FuncIsValidTarget>	( "_ZN11CBasePlayer22Observer_IsValidTargetEib"	, ( void* )MDLL_Spawn, TRUE );
 		FuncSetModetOrig		= Hooker->MemorySearch< FuncSetMode>		( "_ZN11CBasePlayer16Observer_SetModeEi"		, ( void* )MDLL_Spawn, TRUE );
 	#endif
 
@@ -110,7 +110,7 @@ void OnMetaAttach()
 			#ifdef WIN32
 				result = FuncIsvalidTargetOrig( pvPlayer, DUMMY_VAL, index, override ? false : checkteam );
 			#else
-				result = FuncIsvaludTargetOrig( pvPlayer, index, override ? false : checkteam );
+				result = FuncIsvalidTargetOrig( pvPlayer, index, override ? false : checkteam );
 			#endif
 
 			FuncIsValidTargetHook->Patch();
