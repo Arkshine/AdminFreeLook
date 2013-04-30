@@ -5,7 +5,7 @@
 
 // Module info
 #define MODULE_NAME "Admin Free Look"
-#define MODULE_VERSION "1.5"
+#define MODULE_VERSION "1.5.1"
 #define MODULE_AUTHOR "Arkshine"
 #define MODULE_URL "https://forums.alliedmods.net/showthread.php?t=100067"
 #define MODULE_LOGTAG "ADMINFREELOOK"

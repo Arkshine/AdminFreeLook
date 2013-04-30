@@ -105,10 +105,11 @@ void OnMetaAttach()
 float CVarGetFloat( const char* cvarName )
 {
 	float value = g_engfuncs.pfnCVarGetFloat( cvarName );
+	int numFlags = 0;
 
 	if( CvarFreeLookEnable->value && value > 0 )
 	{
-		if( isAdmin( CurrentPlayerIndex ) && value == 2 ) 
+		if( ( value == 2 && isAdmin( CurrentPlayerIndex ) ) || getUserMode( numFlags ) ) 
 		{
 			value = CurrentPlayerIndex = 0;
 		}
@@ -151,13 +152,9 @@ float CVarGetFloat( const char* cvarName )
 					{
 						mode = getFlagPosition( userMode );
 					}
-					else if( ~userMode & 1 << ( mode - 1 ) )
+					else
 					{
-						mode = getNextUserMode( mode, userMode );
-					}
-					else if( mode == OBS_CHASE_FREE && INDEXENT2( CurrentPlayerIndex )->v.iuser1 == OBS_MAP_CHASE )
-					{
-						mode = OBS_CHASE_LOCKED;
+						mode = getNextUserMode( INDEXENT2( CurrentPlayerIndex )->v.iuser1, userMode );
 					}
 				}
 			}
