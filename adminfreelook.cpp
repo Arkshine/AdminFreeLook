@@ -7,6 +7,7 @@ CHooker*	Hooker = &HookerClass;
 
 cvar_t amx_adminfreelook		= { "amx_adminfreelook"		, "1", 1, 1.0 };
 cvar_t amx_adminfreelookflag	= { "amx_adminfreelookflag"	, "d" };
+cvar_t amx_adminfreelookmode	= { "amx_adminfreelookmode"	, "0" };
 
 #ifdef _WIN32
 
@@ -26,69 +27,151 @@ cvar_t amx_adminfreelookflag	= { "amx_adminfreelookflag"	, "d" };
 
 	int		Observer_IsValidTarget_Hook	( void* pvPlayer, int index, bool checkteam );
 	void	Observer_SetMode_Hook		( void* pvPlayer, int mode );
+	void	Observer_SetMode_Hook2		( void* pvPlayer, int mode );
 
 #endif
 
-bool	isAllowedPlayer	( int index );
-int		readFlags		( const char* c );
-int		privateToIndex	( const void* pdata );
+bool	isAdmin				( int index );
+int		readFlags			( const char* c, int& numFlags );
+int		privateToIndex		( const void* pdata );
+void	printModuleStatus	( void );
+float	CVarGetFloat		( const char* cvarName );
+int		getUserMode			( int& numFlags );
+int		getNextUserMode		( int currentMode, int allowedModes );
+int		getFlagPosition		( int flag );
+
+inline edict_t* INDEXENT2( int iEdictNum )
+{ 
+	if( iEdictNum >= 1 && iEdictNum <= gpGlobals->maxClients )
+		return MF_GetPlayerEdict(iEdictNum);
+	else
+		return ( *g_engfuncs.pfnPEntityOfEntIndex )( iEdictNum ); 
+}
 
 CFunc*				FuncIsValidTargetHook	= NULL;
 CFunc*				FuncSetModeHook			= NULL;
+CFunc*				FuncSetModeHook2		= NULL;
 
 FuncIsValidTarget	FuncIsvalidTargetOrig	= NULL;
 FuncSetMode			FuncSetModetOrig		= NULL;
 
+#if defined( __linux__ )
+	FuncSetMode		FuncSetModetOrig2		= NULL;
+#endif
+
 cvar_t* CvarFreeLookEnable;
 cvar_t* CvarFreeLookFlags;
+cvar_t* CvarFreeLookMode;
+
+extern enginefuncs_t* g_pengfuncsTable;
+
+int CurrentPlayerIndex = 0;
+
+#define OBS_NONE				0
+#define OBS_CHASE_LOCKED		1 // 1 << 0, 1 , a
+#define OBS_CHASE_FREE			2 // 1 << 1, 2 , b
+#define OBS_ROAMING				3 // 1 << 2, 4 , c	
+#define OBS_IN_EYE				4 // 1 << 3, 8 , d
+#define OBS_MAP_FREE			5 // 1 << 4, 16, e
+#define OBS_MAP_CHASE			6 // 1 << 5, 32, f
 
 void OnMetaAttach()
 {
 	CVAR_REGISTER( &amx_adminfreelook );
 	CVAR_REGISTER( &amx_adminfreelookflag );
+	CVAR_REGISTER( &amx_adminfreelookmode );
 
 	CvarFreeLookEnable	= CVAR_GET_POINTER( amx_adminfreelook.name );
 	CvarFreeLookFlags	= CVAR_GET_POINTER( amx_adminfreelookflag.name );
-	
-	#ifdef _WIN32 
-		FuncIsvalidTargetOrig	= Hooker->MemorySearch< FuncIsValidTarget>	( "0x8B,*,*,*,0x56,0x8B,*,0x8B,*,*,*,*,*,0x3B"	, ( void* )MDLL_Spawn, FALSE );
-		FuncSetModetOrig		= Hooker->MemorySearch< FuncSetMode>		( "0x83,*,*,0x55,0x8B,*,*,*,0x56,0x8B,*,0x8B"	, ( void* )MDLL_Spawn, FALSE );
+	CvarFreeLookMode	= CVAR_GET_POINTER( amx_adminfreelookmode.name );
+
+	void* libraryContained = ( void* )MDLL_Spawn;
+
+	#if defined( WIN32 )
+		FuncIsvalidTargetOrig	= Hooker->MemorySearch< FuncIsValidTarget>	( "0x8B,*,*,*,0x56,0x8B,*,0x8B,*,*,*,*,*,0x3B"	, libraryContained, FALSE );
+		FuncSetModetOrig		= Hooker->MemorySearch< FuncSetMode>		( "0x83,*,*,0x55,0x8B,*,*,*,0x56,0x8B,*,0x8B"	, libraryContained, FALSE );
 	#else
-		FuncIsvalidTargetOrig	= Hooker->MemorySearch< FuncIsValidTarget>	( "_ZN11CBasePlayer22Observer_IsValidTargetEib"	, ( void* )MDLL_Spawn, TRUE );
-		FuncSetModetOrig		= Hooker->MemorySearch< FuncSetMode>		( "_ZN11CBasePlayer16Observer_SetModeEi"		, ( void* )MDLL_Spawn, TRUE );
+		FuncIsvalidTargetOrig	= Hooker->MemorySearch< FuncIsValidTarget>	( "_ZN11CBasePlayer22Observer_IsValidTargetEib"	, libraryContained, TRUE );
+		FuncSetModetOrig		= Hooker->MemorySearch< FuncSetMode>		( "0x55,0x57,0x56,0x89,*,0x53,0x89,*,0x83,*,*,0xD9,*,0xD9", libraryContained, FALSE );
+		FuncSetModetOrig2		= Hooker->MemorySearch< FuncSetMode>		( "_ZN11CBasePlayer16Observer_SetModeEi"		, libraryContained, TRUE );
 	#endif
 
 	FuncIsValidTargetHook	= Hooker->CreateHook( ( void* )FuncIsvalidTargetOrig, ( void* )Observer_IsValidTarget_Hook	, TRUE );
 	FuncSetModeHook			= Hooker->CreateHook( ( void* )FuncSetModetOrig		, ( void* )Observer_SetMode_Hook		, TRUE );
 
-	printf( "\n %s v%s - by %s.\n -\n", MODULE_NAME, MODULE_VERSION, MODULE_AUTHOR );
-
-	if( !FuncIsvalidTargetOrig )
-		printf( " Signature/symbol could not be found.\n\n" );
-	else if( !FuncIsValidTargetHook )
-		printf( " Hook creation failed.\n\n" );
-	else 
-		printf( " Loaded with success.\n\n" );
+	printModuleStatus();
 }
 
-#ifdef _WIN32
+float CVarGetFloat( const char* cvarName )
+{
+	float value = g_engfuncs.pfnCVarGetFloat( cvarName );
+
+	if( CvarFreeLookEnable->value && value > 0 )
+	{
+		if( isAdmin( CurrentPlayerIndex ) && value == 2 ) 
+		{
+			value = CurrentPlayerIndex = 0;
+		}
+	}
+
+	RETURN_META_VALUE( MRES_SUPERCEDE, value );
+}
+
+#if defined( WIN32 )
 	void __fastcall Observer_SetMode_Hook( void* pvPlayer, DUMMY, int mode )
 #else
 	void Observer_SetMode_Hook( void* pvPlayer, int mode )
 #endif
 	{
-		printf( "Observer_SetMode_Hook - mode  = %d\n", mode );
+		#if defined( __linux__ )
+
+		asm volatile
+		( 
+			"movl %%edx, %0;" 
+			"movl %%eax, %1;"
+			: "=d" (mode), "=a" (pvPlayer) : :
+		);
+
+		#endif
+
+		CurrentPlayerIndex = privateToIndex( pvPlayer );
+
+		g_pengfuncsTable->pfnCVarGetFloat = CVarGetFloat;
 
 		if( FuncSetModeHook->Restore() )
 		{
-			#ifdef WIN32
+			if( !isAdmin( CurrentPlayerIndex ) )
+			{
+				int numFlags = 0;
+				int userMode = getUserMode( numFlags );
+
+				if( numFlags )
+				{
+					if( numFlags == 1 )
+					{
+						mode = getFlagPosition( userMode );
+					}
+					else if( ~userMode & 1 << ( mode - 1 ) )
+					{
+						mode = getNextUserMode( mode, userMode );
+					}
+					else if( mode == OBS_CHASE_FREE && INDEXENT2( CurrentPlayerIndex )->v.iuser1 == OBS_MAP_CHASE )
+					{
+						mode = OBS_CHASE_LOCKED;
+					}
+				}
+			}
+
+			#if defined( WIN32 )
 				FuncSetModetOrig( pvPlayer, DUMMY_VAL, mode );
 			#else
-				FuncSetModetOrig( pvPlayer, mode );
+				FuncSetModetOrig2( pvPlayer, mode );
 			#endif
 
 			FuncSetModeHook->Patch();
 		}
+
+		g_pengfuncsTable->pfnCVarGetFloat = NULL;
 	}
 
 #ifdef _WIN32
@@ -100,7 +183,7 @@ void OnMetaAttach()
 		bool	override = false;
 		int		result = 0;
 
-		if( checkteam && isAllowedPlayer( privateToIndex( pvPlayer ) ) )
+		if( checkteam && CvarFreeLookEnable->value && isAdmin( privateToIndex( pvPlayer ) ) )
 		{
 			override = true;
 		}
@@ -119,9 +202,10 @@ void OnMetaAttach()
 		return result;
 	}
 
-bool isAllowedPlayer( int index )
+bool isAdmin( int index )
 {
-	return CvarFreeLookEnable->value > 0 && readFlags( CvarFreeLookFlags->string ) & MF_GetPlayerFlags( index );
+	int numFlags = 0;
+	return !!( readFlags( CvarFreeLookFlags->string, numFlags ) & MF_GetPlayerFlags( index ) );
 }
 
 int privateToIndex( const void* pdata )
@@ -131,7 +215,7 @@ int privateToIndex( const void* pdata )
 		char* ptr = ( char* )pdata;
 		ptr += 4;
 
-		entvars_t *pev = *( entvars_t ** )ptr;
+		entvars_t* pev = *( entvars_t** )ptr;
 		
 		if( pev && pev->pContainingEntity )
 		{
@@ -142,17 +226,74 @@ int privateToIndex( const void* pdata )
 	return NULL;
 }
 
-int readFlags( const char* c )
+int readFlags( const char* c, int& numFlags )
 {
 	int flags = 0;
 
 	while( *c )
-	{
-		flags |= ( 1 <<( *c++ - 'a' ) );
+	{  
+		if( *c >= 'a' && *c <= 'f' )
+		{
+			flags |= ( 1 <<( *c - 'a' ) );
+			numFlags++;
+		}
+
+		*c++;
 	}
 
-	return flags;
+	return numFlags ? flags : 0;
 }
 
+int getFlagPosition( int flag )
+{
+	int c;
+
+	for( c = 0; flag; flag >>= 1 )
+	{
+		c++;
+	}
+
+	return c;
+}
+
+int getUserMode( int& numFlags )
+{
+	return readFlags( CvarFreeLookMode->string, numFlags );
+}
+
+int getNextUserMode( int currentMode, int allowedModes )
+{
+	for( int i = OBS_NONE; i < OBS_MAP_CHASE; i++ )
+	{
+		currentMode = ( currentMode % OBS_MAP_CHASE ) + 1;
+
+		if( 1 << ( currentMode - 1 ) & allowedModes && INDEXENT2( CurrentPlayerIndex )->v.iuser1 != currentMode )
+		{
+			break;
+		}
+	}
+
+	return currentMode;
+}
+
+void printModuleStatus( void )
+{
+	printf( "\n %s v%s - by %s.\n -\n", MODULE_NAME, MODULE_VERSION, MODULE_AUTHOR );
+
+	if( !FuncIsvalidTargetOrig )
+		printf( " CBasePlayer::Observer_IsValidTarget - Signature/symbol could not be found.\n\n" );
+	else if( !FuncSetModetOrig )
+		printf( " CBasePlayer::Observer_SetMode - Signature/symbol could not be found.\n\n" );
+#if defined( __linux__ )
+	else if( !FuncSetModetOrig2 )
+		printf( " CBasePlayer::Observer_SetMode (second part) - Signature/symbol could not be found.\n" );
+#endif
+	else if( !FuncIsValidTargetHook )
+		printf( " CBasePlayer::Observer_IsValidTarget - Hook creation failed.\n\n" );
+	else if( !FuncSetModeHook )
+		printf( " BasePlayer::Observer_SetMode - Hook creation failed.\n\n" );
+	else 
+		printf( " Loaded with success.\n\n" );
+}
 
 

@@ -122,14 +122,18 @@ typedef enum
 	AnyByte 
 } SignatureEntryType;
 
-#define CHOOKER_NONE	0 << 0
-#define CHOOKER_FOUND	1 << 0
-#define CHOOKER_PATCHED	2 << 0
+#define CHOOKER_NONE	0
+#define CHOOKER_FOUND	1
+#define CHOOKER_PATCHED	2
 
 typedef struct {
 	const char *sig;
 	int offset;
+	byte* patch;
+	int patchsize;
+	int patchdstofs;
 	BOOL mandatory;
+	void* address;
 	int result;
 } CHOOKER_SIG_CALL;
 
@@ -536,6 +540,40 @@ class CMemory
 			return FALSE;
 		}
 
+		BOOL PatchCall( void *src, int offset, void *dst, byte *patch, int patchsize, int dstoffset )
+		{
+			char* address = ( char* )src;
+			address += offset;
+
+			union
+			{
+				void *func;
+				byte fbyte[4];
+
+			} ptob;
+
+			ptob.func = ( void* )address;
+
+			patch[ dstoffset ]		= ptob.fbyte[ 0 ];
+			patch[ dstoffset + 1 ]	= ptob.fbyte[ 1 ];
+			patch[ dstoffset + 2 ]	= ptob.fbyte[ 2 ];
+			patch[ dstoffset + 3 ]	= ptob.fbyte[ 3 ];
+
+			unsigned long oldProtection;
+
+			if( ChangeMemoryProtection( address, patchsize, PAGE_EXECUTE_READWRITE, oldProtection ) )
+			{
+				memcpy( address, patch, patchsize );
+
+				if( oldProtection == PAGE_EXECUTE_READWRITE || ChangeMemoryProtection( address, patchsize, oldProtection ) )
+				{
+					return TRUE;
+				}
+			}
+
+			return FALSE;
+		}
+
 };
 
 class CFunc
@@ -547,8 +585,8 @@ class CFunc
 
 		CMemory* memFunc;
 
-		unsigned char i_original[12];
-		unsigned char i_patched[12];
+		unsigned char i_original[5];
+		unsigned char i_patched[5];
 		unsigned char *original;
 		unsigned char *patched;
 
@@ -580,23 +618,27 @@ class CFunc
 				unsigned int *p;
 				detour = dst;
 
-				memcpy( original, address, 12 );
+				memcpy( original, address, 5 );
 
 				// lea    this ,%edx
 				// movl    this ,%edx
-				patched[0] = 0x8d;
-				patched[1] = 0x15;
+				//patched[0] = 0x8d;
+				//patched[1] = 0x15;
 
-				p = ( unsigned int* )( patched + 2 );
-				*p = ( unsigned int )this;
+				//p = ( unsigned int* )( patched + 2 );
+				//*p = ( unsigned int )this;
 
 				// nop
-				patched[6] = 0x90;
+				//patched[6] = 0x90;
 
 				// jmp detour
-				patched[7] = 0xE9;
-				p = ( unsigned int* )( patched + 8 );
-				*p = ( unsigned int )dst - ( unsigned int )address - 12;
+				//patched[7] = 0xE9;
+				//p = ( unsigned int* )( patched + 8 );
+				//*p = ( unsigned int )dst - ( unsigned int )address - 12;
+
+				patched[0] = 0xE9;
+				p = ( unsigned int* )( patched + 1 );
+				*p = ( unsigned int )dst - ( unsigned int )address - 5;
 
 				if( hook && Patch() )
 				{
@@ -620,7 +662,8 @@ class CFunc
 			{
 				if( memFunc->ChangeMemoryProtection( address, PAGESIZE, PAGE_EXECUTE_READWRITE ) )
 				{
-					memcpy( address, patched, 12 );
+					//memcpy( address, patched, 12 );
+					memcpy( address, patched, 5 );
 					ispatched = TRUE;
 				}
 			}
@@ -634,7 +677,8 @@ class CFunc
 			{
 				if( memFunc->ChangeMemoryProtection( address, PAGESIZE, PAGE_EXECUTE_READWRITE ) )
 				{
-					memcpy( address, original, 12 );
+					//memcpy( address, original, 12 );
+					memcpy( address, original, 5 );
 					ispatched = FALSE;
 				}
 			}
@@ -693,11 +737,19 @@ class CHooker
 			while(sigs[c].sig)
 			{
 				address = memFunc->SearchSignatureByAddress((char*)sigs[c].sig, libaddr);
-				printf("SIG: %d\t%s\t0x%08x\n", sigs[c].offset, sigs[c].sig, address);
+				//printf("SIG: %d\t%s\t0x%08x\n", sigs[c].offset, sigs[c].sig, address);
 				if(address)
 				{
+					sigs[c].address = address;
+
 					sigs[c].result |= CHOOKER_FOUND;
-					if(memFunc->PatchCall(address, sigs[c].offset, (void*)dst))
+
+					if( !sigs[c].patchsize )
+						ret = memFunc->PatchCall(address, sigs[c].offset, (void*)dst);
+					else
+						ret = memFunc->PatchCall(address, sigs[c].offset, (void*)dst, sigs[c].patch, sigs[c].patchsize, sigs[c].patchdstofs );
+
+					if( ret )
 					{
 						sigs[c].result |= CHOOKER_PATCHED;
 					}
@@ -729,11 +781,18 @@ class CHooker
 			while(sigs[c].sig)
 			{
 				address = memFunc->SearchSignatureByLibrary((char*)sigs[c].sig, libname);
-				printf("SIG: %d\t%s\t0x%08x\n", sigs[c].offset, sigs[c].sig, address);
+				//printf("SIG: %d\t%s\t0x%08x\n", sigs[c].offset, sigs[c].sig, address);
 				if(address)
 				{
+					sigs[c].address = address;
 					sigs[c].result |= CHOOKER_FOUND;
-					if(memFunc->PatchCall(address, sigs[c].offset, (void*)dst))
+
+					if( !sigs[c].patchsize )
+						ret = memFunc->PatchCall(address, sigs[c].offset, (void*)dst);
+					else
+						ret = memFunc->PatchCall(address, sigs[c].offset, (void*)dst, sigs[c].patch, sigs[c].patchsize, sigs[c].patchdstofs );
+
+					if( ret )
 					{
 						sigs[c].result |= CHOOKER_PATCHED;
 					}

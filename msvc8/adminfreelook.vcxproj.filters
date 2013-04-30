@@ -1,3 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\adminfreelook.cpp" />
+    <ClCompile Include="..\sdk\amxxmodule.cpp">
+      <Filter>Module SDK\SDK Base</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\sdk\moduleconfig.h">
+      <Filter>Module SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="..\sdk\amxxmodule.h">
+      <Filter>Module SDK\SDK Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\chooker.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Module SDK">
+      <UniqueIdentifier>{0d464027-c4d0-4a3a-a6d8-82984a40a620}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Module SDK\SDK Base">
+      <UniqueIdentifier>{cc24d0c1-b9ad-40f3-9b27-2ac565e00715}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
 </Project>

@@ -5,7 +5,7 @@
 
 // Module info
 #define MODULE_NAME "Admin Free Look"
-#define MODULE_VERSION "1.4"
+#define MODULE_VERSION "1.5"
 #define MODULE_AUTHOR "Arkshine"
 #define MODULE_URL "https://forums.alliedmods.net/showthread.php?t=100067"
 #define MODULE_LOGTAG "ADMINFREELOOK"
@@ -244,7 +244,7 @@
 // #define FN_WriteString						WriteString
 // #define FN_WriteEntity						WriteEntity
 // #define FN_CVarRegister						CVarRegister
-// #define FN_CVarGetFloat						CVarGetFloat
+//#define FN_CVarGetFloat						CVarGetFloat
 // #define FN_CVarGetString						CVarGetString
 // #define FN_CVarSetFloat						CVarSetFloat
 // #define FN_CVarSetString						CVarSetString
