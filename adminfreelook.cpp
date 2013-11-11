@@ -1,4 +1,3 @@
-
 #include "amxxmodule.h"
 #include "chooker.h"
 
@@ -229,7 +228,7 @@ int readFlags( const char* c, int& numFlags )
 
 	while( *c )
 	{  
-		if( *c >= 'a' && *c <= 'f' )
+		if( *c >= 'a' && *c <= 'z' )
 		{
 			flags |= ( 1 <<( *c - 'a' ) );
 			numFlags++;
