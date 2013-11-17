@@ -1,7 +1,7 @@
 AdminFreeLook
 =============
 
-AMX Mod X module whichs allows spectating admins to use any camera modes whatever `mp_forcecamera` value.  
+AMX Mod X module whichs allows spectating admins to use any camera modes whatever `mp_forcecamera` or `mp_forcechasecam` value.
 This only works for latest HLDS version.
 
 Originally created by [jim_yang](https://forums.alliedmods.net/showthread.php?t=100067).
