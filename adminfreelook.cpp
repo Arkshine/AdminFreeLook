@@ -224,7 +224,7 @@ int privateToIndex( const void* pdata )
         }
     }
 
-    return NULL;
+    return 0;
 }
 
 int readFlags( const char* c, int& numFlags )
