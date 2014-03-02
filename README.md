@@ -8,8 +8,15 @@ Originally created by [jim_yang](https://forums.alliedmods.net/showthread.php?t=
 Rewritten to be used after Steam February update.
 
 
-Configuration (cvars)
----------------------
+##Configuration (cvars)
+
+
+* A reminder about `mp_forcecamera` and `mp_forcechasecam`.  
+  This is the base configuration for all players, which can be overwritten by below cvars.  
+    
+   `0` : Observers can spectate anyone, any mode.  
+   `1` : Observers can only spectate his own team.  
+   `2` : Observers can only spectate his own team and in-eye mode only.  
 
 * __`amx_adminfreelook`__
  
@@ -23,7 +30,7 @@ Configuration (cvars)
 * __`amx_adminfreelookflag`__  
 
   Admin's access flags.  
-  Who can have the ability to spectate without being restricted by gameplay cvar.  
+  Ability to observe without being restricted by gameplay cvar.  
   Flags are additives.
   
   Default flags are (from `users.ini` file) : 
@@ -59,7 +66,7 @@ Configuration (cvars)
 
 * __`amx_adminfreelookmode`__
 
-  This will force non-admin players to use specific modes only.
+  This will force *non-admin* players to use specific modes only.  
   Flags are additives.
   
   `0` : None  
@@ -72,13 +79,12 @@ Configuration (cvars)
   
   Default value : *"0"*
   
-
-Installation
-------------
+  
+##Installation
 
 1. From [Releases section](https://github.com/Arkshine/AdminFreeLook/releases/latest), get the `adminfreelook.dll` (windows) or `adminfreelook.so` (linux) file
 2. Upload it in your *amxmodx/modules/* folder.
 3. Open your *configs/modules.ini* and add at the end `adminfreelook`
-4. Configure `mp_forcechasecam` and modules cvars as wished
-5. Make sure to have `mp_forcecamera "0"` in your *server.cfg* (otherwise it will mess up things)
+4. Configure `mp_forcechasecam` and `mp_forcecamera` gameplay cvars. Both should have the same value.
+5. Configure `amx_adminfreelookflag` and `amx_adminfreelookmode` modules cvars.
 6. Restart.
