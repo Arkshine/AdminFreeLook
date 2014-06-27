@@ -1010,7 +1010,7 @@ void FN_ParticleEffect(const float *org, const float *dir, float color, float co
 #endif // FN_ParticleEffect
 
 #ifdef FN_LightStyle
-void FN_LightStyle(int style, char *val);
+void FN_LightStyle(int style, const char *val);
 #endif // FN_LightStyle
 
 #ifdef FN_DecalIndex
@@ -1218,7 +1218,7 @@ void FN_CrosshairAngle(const edict_t *pClient, float pitch, float yaw);
 #endif // FN_CrosshairAngle
 
 #ifdef FN_LoadFileForMe
-byte *FN_LoadFileForMe(char *filename, int *pLength);
+byte *FN_LoadFileForMe(const char *filename, int *pLength);
 #endif // FN_LoadFileForMe
 
 #ifdef FN_FreeFile
@@ -1354,7 +1354,7 @@ void FN_DeltaUnsetField(struct delta_s *pFields, const char *fieldname);
 #endif // FN_DeltaUnsetField
 
 #ifdef FN_DeltaAddEncoder
-void FN_DeltaAddEncoder(char *name, void (*conditionalencode)( struct delta_s *pFields, const unsigned char *from, const unsigned char *to ) );
+void FN_DeltaAddEncoder(const char *name, void (*conditionalencode)( struct delta_s *pFields, const unsigned char *from, const unsigned char *to ) );
 #endif // FN_DeltaAddEncoder
 
 #ifdef FN_GetCurrentPlayer
@@ -1386,7 +1386,7 @@ int FN_engCreateInstancedBaseline(int classname, struct entity_state_s *baseline
 #endif // FN_engCreateInstancedBaseline
 
 #ifdef FN_Cvar_DirectSet
-void FN_Cvar_DirectSet(struct cvar_s *var, char *value);
+void FN_Cvar_DirectSet(struct cvar_s *var, const char *value);
 #endif // FN_Cvar_DirectSet
 
 #ifdef FN_ForceUnmodified
@@ -1591,7 +1591,7 @@ void FN_ParticleEffect_Post(const float *org, const float *dir, float color, flo
 #endif // FN_ParticleEffect_Post
 
 #ifdef FN_LightStyle_Post
-void FN_LightStyle_Post(int style, char *val);
+void FN_LightStyle_Post(int style, const char *val);
 #endif // FN_LightStyle_Post
 
 #ifdef FN_DecalIndex_Post
@@ -1799,7 +1799,7 @@ void FN_CrosshairAngle_Post(const edict_t *pClient, float pitch, float yaw);
 #endif // FN_CrosshairAngle_Post
 
 #ifdef FN_LoadFileForMe_Post
-byte *FN_LoadFileForMe_Post(char *filename, int *pLength);
+byte *FN_LoadFileForMe_Post(const char *filename, int *pLength);
 #endif // FN_LoadFileForMe_Post
 
 #ifdef FN_FreeFile_Post
@@ -1935,7 +1935,7 @@ void FN_DeltaUnsetField_Post(struct delta_s *pFields, const char *fieldname);
 #endif // FN_DeltaUnsetField_Post
 
 #ifdef FN_DeltaAddEncoder_Post
-void FN_DeltaAddEncoder_Post(char *name, void (*conditionalencode)( struct delta_s *pFields, const unsigned char *from, const unsigned char *to ) );
+void FN_DeltaAddEncoder_Post(const char *name, void (*conditionalencode)( struct delta_s *pFields, const unsigned char *from, const unsigned char *to ) );
 #endif // FN_DeltaAddEncoder_Post
 
 #ifdef FN_GetCurrentPlayer_Post
@@ -1967,7 +1967,7 @@ int FN_engCreateInstancedBaseline_Post(int classname, struct entity_state_s *bas
 #endif // FN_engCreateInstancedBaseline_Post
 
 #ifdef FN_Cvar_DirectSet_Post
-void FN_Cvar_DirectSet_Post(struct cvar_s *var, char *value);
+void FN_Cvar_DirectSet_Post(struct cvar_s *var, const char *value);
 #endif // FN_Cvar_DirectSet_Post
 
 #ifdef FN_ForceUnmodified_Post
@@ -2120,7 +2120,7 @@ typedef int				(*PFN_ADD_NATIVES)				(const AMX_NATIVE_INFO * /*list*/);
 typedef int				(*PFN_ADD_NEW_NATIVES)			(const AMX_NATIVE_INFO * /*list*/);
 typedef char *			(*PFN_BUILD_PATHNAME)			(const char * /*format*/, ...);
 typedef char *			(*PFN_BUILD_PATHNAME_R)			(char * /*buffer*/, size_t /* maxlen */, const char * /* format */, ...);
-typedef cell *			(*PFN_MF_GetAmxAddr)				(AMX * /*amx*/, cell /*offset*/);
+typedef cell *			(*PFN_GET_AMXADDR)				(AMX * /*amx*/, cell /*offset*/);
 typedef void			(*PFN_PRINT_SRVCONSOLE)			(const char * /*format*/, ...);
 typedef const char *	(*PFN_GET_MODNAME)				(void);
 typedef const char *	(*PFN_GET_AMXSCRIPTNAME)		(int /*id*/);
@@ -2209,7 +2209,7 @@ extern PFN_ADD_NATIVES				g_fn_AddNatives;
 extern PFN_ADD_NEW_NATIVES			g_fn_AddNewNatives;
 extern PFN_BUILD_PATHNAME			g_fn_BuildPathname;
 extern PFN_BUILD_PATHNAME_R			g_fn_BuildPathnameR;
-extern PFN_MF_GetAmxAddr				g_fn_GetAmxAddr;
+extern PFN_GET_AMXADDR				g_fn_GetAmxAddr;
 extern PFN_PRINT_SRVCONSOLE			g_fn_PrintSrvConsole;
 extern PFN_GET_MODNAME				g_fn_GetModname;
 extern PFN_GET_AMXSCRIPTNAME		g_fn_GetAmxScriptName;

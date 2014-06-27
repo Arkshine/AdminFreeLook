@@ -2440,7 +2440,7 @@ PFN_ADD_NATIVES				g_fn_AddNatives;
 PFN_ADD_NEW_NATIVES			g_fn_AddNewNatives;
 PFN_BUILD_PATHNAME			g_fn_BuildPathname;
 PFN_BUILD_PATHNAME_R		g_fn_BuildPathnameR;
-PFN_MF_GetAmxAddr				g_fn_GetAmxAddr;
+PFN_GET_AMXADDR				g_fn_GetAmxAddr;
 PFN_PRINT_SRVCONSOLE		g_fn_PrintSrvConsole;
 PFN_GET_MODNAME				g_fn_GetModname;
 PFN_GET_AMXSCRIPTNAME		g_fn_GetAmxScriptName;
@@ -2591,7 +2591,7 @@ C_DLLEXPORT int AMXX_Attach(PFN_REQ_FNPTR reqFnptrFunc)
 	REQFUNC("GetAmxStringLen", g_fn_GetAmxStringLen, PFN_GET_AMXSTRINGLEN);
 	REQFUNC("FormatAmxString", g_fn_FormatAmxString, PFN_FORMAT_AMXSTRING);
 	REQFUNC("CopyAmxMemory", g_fn_CopyAmxMemory, PFN_COPY_AMXMEMORY);
-	REQFUNC("GetAmxAddr", g_fn_GetAmxAddr, PFN_MF_GetAmxAddr);
+	REQFUNC("GetAmxAddr", g_fn_GetAmxAddr, PFN_GET_AMXADDR);
 
 	REQFUNC("amx_Exec", g_fn_AmxExec, PFN_AMX_EXEC);
 	REQFUNC("amx_Execv", g_fn_AmxExecv, PFN_AMX_EXECV);
