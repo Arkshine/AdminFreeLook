@@ -6,7 +6,7 @@ AMX Mod X module whichs allows spectating admins to use any camera modes whateve
 This only works for latest HLDS version.
 
 Originally created by [jim_yang](https://forums.alliedmods.net/showthread.php?t=100067).
-Rewritten to be used after Steam February update.
+Rewritten to be used after Steam February update. 
 
 
 ##Configuration (cvars)
