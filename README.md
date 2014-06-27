@@ -1,5 +1,6 @@
 AdminFreeLook
 =============
+[![Build Status](https://travis-ci.org/Arkshine/AdminFreeLook.svg?branch=master)](https://travis-ci.org/Arkshine/AdminFreeLook)
 
 AMX Mod X module whichs allows spectating admins to use any camera modes whatever `mp_forcecamera` or `mp_forcechasecam` value.
 This only works for latest HLDS version.
@@ -87,4 +88,4 @@ Rewritten to be used after Steam February update.
 3. Open your *configs/modules.ini* and add at the end `adminfreelook`
 4. Configure `mp_forcechasecam` and `mp_forcecamera` gameplay cvars. Both should have the same value.
 5. Configure `amx_adminfreelookflag` and `amx_adminfreelookmode` modules cvars.
-6. Restart.
+6. Restart. 
