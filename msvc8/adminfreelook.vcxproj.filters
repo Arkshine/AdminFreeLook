@@ -5,6 +5,17 @@
     <ClCompile Include="..\sdk\amxxmodule.cpp">
       <Filter>Module SDK\SDK Base</Filter>
     </ClCompile>
+    <ClCompile Include="..\public\memtools\MemoryUtils.cpp">
+      <Filter>Memtools</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\memtools\CDetour\detours.cpp">
+      <Filter>Memtools\CDetour</Filter>
+    </ClCompile>
+    <ClCompile Include="..\public\memtools\CDetour\asm\asm.c">
+      <Filter>Memtools\CDetour\asm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utils.cpp" />
+    <ClCompile Include="..\amxx_api.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\sdk\moduleconfig.h">
@@ -13,7 +24,21 @@
     <ClInclude Include="..\sdk\amxxmodule.h">
       <Filter>Module SDK\SDK Base</Filter>
     </ClInclude>
-    <ClInclude Include="..\chooker.h" />
+    <ClInclude Include="..\public\memtools\MemoryUtils.h">
+      <Filter>Memtools</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\memtools\CDetour\detourhelpers.h">
+      <Filter>Memtools\CDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\memtools\CDetour\detours.h">
+      <Filter>Memtools\CDetour</Filter>
+    </ClInclude>
+    <ClInclude Include="..\public\memtools\CDetour\asm\asm.h">
+      <Filter>Memtools\CDetour\asm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\adminfreelook.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Module SDK">
@@ -21,6 +46,18 @@
     </Filter>
     <Filter Include="Module SDK\SDK Base">
       <UniqueIdentifier>{cc24d0c1-b9ad-40f3-9b27-2ac565e00715}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Memtools">
+      <UniqueIdentifier>{1c2134be-b8fb-4ed0-87f1-7730b1f79582}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Memtools\CDetour">
+      <UniqueIdentifier>{b3155200-64bd-4396-8ad4-6317eebb9f67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Memtools\CDetour\asm">
+      <UniqueIdentifier>{2f387604-8e90-4881-b30a-11034068f93c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{237abef9-cb3c-4928-bd15-3e352e2bfe69}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

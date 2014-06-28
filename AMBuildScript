@@ -298,7 +298,12 @@ binary = AMXX.MetaModule(builder, 'adminfreelook')
 
 binary.sources = [
   'sdk/amxxmodule.cpp',
-  'adminfreelook.cpp'
+  'amxx_api.cpp',
+  'adminfreelook.cpp',
+  'utils.cpp',
+  'public/memtools/MemoryUtils.cpp',
+  'public/memtools/CDetour/detours.cpp',
+  'public/memtools/CDetour/asm/asm.c'
 ]
 
 builder.Add(binary)
