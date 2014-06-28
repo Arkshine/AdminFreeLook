@@ -22,8 +22,7 @@
 
 #elif defined(__APPLE__)
 
-	#define FUNC_SETMODE            "\\x55\\x57\\x56\\x89\\x2A\\x53\\x89\\x2A\\x83\\x2A\\x2A\\xD9\\x2A\\xD9"
-	#define FUNC_SETMODE2           "_ZN11CBasePlayer16Observer_SetModeEi"
+	#define FUNC_SETMODE            "_ZN11CBasePlayer16Observer_SetModeEi"
 	#define FUNC_ISVALIDTARGET      "_ZN11CBasePlayer22Observer_IsValidTargetEib"
 	#define FUNC_IDENT_HIDDEN_STATE true
 

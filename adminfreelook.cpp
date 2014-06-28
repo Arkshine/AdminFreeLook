@@ -9,7 +9,7 @@ bool ForceNextMode = false;
 
 ke::Vector<ke::AString> ErrorLog;
 
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__)
 	void *FuncSetMode2 = NULL;
 #endif
 
@@ -41,7 +41,7 @@ DETOUR_DECL_MEMBER1(Observer_SetMode, void, int, mode)
 {
 	const void *pvPlayer = (const void *)this;
 
-	#if defined(__linux__) || defined(__APPLE__)
+	#if defined(__linux__)
 		asm volatile
 		(
 			"movl %%edx, %0;"
@@ -72,11 +72,11 @@ DETOUR_DECL_MEMBER1(Observer_SetMode, void, int, mode)
 		}
 	}
 
-#if defined(WIN32)
+#if defined(WIN32) || defined(__APPLE__)
 
 	DETOUR_MEMBER_CALL(Observer_SetMode)(mode);
 
-#elif defined(__linux__) || defined(__APPLE__)
+#elif defined(__linux__)
 
 	ObserverSetModeDetour->DisableDetour();
 	((void(*)(void*, int))FuncSetMode2)((void *)pvPlayer, mode);
@@ -115,16 +115,16 @@ void EnableDetours()
 	void *funcIsvalidTarget = UTIL_FindAddressFromEntry(FUNC_ISVALIDTARGET, FUNC_IDENT_HIDDEN_STATE);
 	void *funcSetMode       = UTIL_FindAddressFromEntry(FUNC_SETMODE, FUNC_IDENT_HIDDEN_STATE);
 
-	#if defined(__linux__) || defined(__APPLE__)
+	#if defined(__linux__)
 		FuncSetMode2 = UTIL_FindAddressFromEntry(FUNC_SETMODE2, FUNC_IDENT_HIDDEN_STATE);
 	#endif
 
 	IsValidTargetDetour   = DETOUR_CREATE_MEMBER_FIXED(Observer_IsValidTarget, funcIsvalidTarget);
 	ObserverSetModeDetour = DETOUR_CREATE_MEMBER_FIXED(Observer_SetMode, funcSetMode);
 	
-#if defined(__linux__) || defined(__APPLE__)
+#if defined(__linux__) 
 	if (ObserverSetModeDetour != NULL && IsValidTargetDetour != NULL && FuncSetMode2 != NULL)
-#elif defined(WIN32)
+#elif defined(WIN32) || defined(__APPLE__)
 	if (ObserverSetModeDetour != NULL && IsValidTargetDetour != NULL)
 #endif
 	{
@@ -139,7 +139,7 @@ void EnableDetours()
 		if (!funcSetMode)
 			ErrorLog.append(ke::AString("CBasePlayer::Observer_SetMode cound not be found."));
 
-	#if defined(__linux__) || defined(__APPLE__)
+	#if defined(__linux__)
 		if (!FuncSetMode2)
 			ErrorLog.append(ke::AString("CBasePlayer::Observer_SetMode (second part) cound not be found"));
 	#endif
