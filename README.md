@@ -1,6 +1,6 @@
 AdminFreeLook
 =============
-[![Build Status](https://travis-ci.org/Arkshine/AdminFreeLook.svg?branch=master)](https://travis-ci.org/Arkshine/AdminFreeLook)
+[![Build Status](https://travis-ci.org/Arkshine/AdminFreeLook.svg?branch=master)](https://travis-ci.org/Arkshine/AdminFreeLook) [![Coverage Status](https://coveralls.io/repos/Arkshine/AdminFreeLook/badge.png)](https://coveralls.io/r/Arkshine/AdminFreeLook)
 
 AMX Mod X module whichs allows spectating admins to use any camera modes whatever `mp_forcecamera` or `mp_forcechasecam` value.
 This only works for latest HLDS version.
