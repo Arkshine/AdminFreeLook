@@ -89,3 +89,5 @@ Rewritten to be used after Steam February update.
 4. Configure `mp_forcechasecam` and `mp_forcecamera` gameplay cvars. Both should have the same value.
 5. Configure `amx_adminfreelookflag` and `amx_adminfreelookmode` modules cvars.
 6. Restart. 
+
+(test)

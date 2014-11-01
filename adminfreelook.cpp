@@ -13,6 +13,9 @@ ke::Vector<ke::AString> ErrorLog;
 	void *FuncSetMode2 = NULL;
 #endif
 
+#if defined(WIN32)
+	void *something
+#endif
 
 float CVarGetFloat(const char* cvarName)
 {
@@ -42,12 +45,14 @@ DETOUR_DECL_MEMBER1(Observer_SetMode, void, int, mode)
 	const void *pvPlayer = (const void *)this;
 
 	#if defined(__linux__)
+	
 		asm volatile
 		(
 			"movl %%edx, %0;"
 			"movl %%eax, %1;"
 			: "=d" (mode), "=a" (pvPlayer) : :
 		);
+		
 	#endif
 
 	CurrentPlayerIndex = UTIL_PrivateToIndex(pvPlayer);
