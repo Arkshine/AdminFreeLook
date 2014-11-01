@@ -28,6 +28,9 @@ install:
   - cmd  if not exist hlsdk      (git clone -q --branch=master https://github.com/alliedmodders/hlsdk)
   - cmd: cd ambuild && python setup.py install
   
+  - cmd: "%VS100COMNTOOLS%/../../VC/vcvarsall.bat" x86  # setup mcvc paths 
+  - cmd: set PATH=%PATH%;C:/Python27/Scripts            # export ambuild script
+  
 # build cache
 cache:
   - ambuild
@@ -40,12 +43,6 @@ cache:
 
 # to run your custom scripts instead of automatic MSBuild
 build_script:
-
-  # setup properly paths
-  - cmd: "%VS100COMNTOOLS%/../../VC/vcvarsall.bat" x86   
-  - cmd: set PATH=%PATH%;C:/Python27/Scripts
-  
-  # time to build
   - cmd: cd .. && mkdir build && cd build
   - cmd: python ../configure.py --enable-optimize --metamod="../metamod-am" --hlsdk="../hlsdk"
   - cmd: ambuild
