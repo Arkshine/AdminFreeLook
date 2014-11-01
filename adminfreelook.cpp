@@ -13,11 +13,14 @@ ke::Vector<ke::AString> ErrorLog;
 	void *FuncSetMode2 = NULL;
 #endif
 
+#if defined(WIN32)
+	void *something
+#enfif
 
 float CVarGetFloat(const char* cvarName)
 {
 	float value = g_engfuncs.pfnCVarGetFloat(cvarName);
-	int numFlags = 0
+	int numFlags = 0;
 
 	if (CvarFreeLookEnable->value && value > 0)
 	{
