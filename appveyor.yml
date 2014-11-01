@@ -53,4 +53,4 @@ build_script:
 
 artifacts:
   - path: build/$(appveyor_project_slug)_amxx/$(appveyor_project_slug)_amxx.dll
-  - name: $(appveyor_project_name)
+    name: $(appveyor_project_name)
