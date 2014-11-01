@@ -25,7 +25,7 @@ init:
 install:
   - cmd: if not exist ambuild    (git clone -q --branch=master https://github.com/alliedmodders/ambuild)
   - cmd: if not exist metamod-am (git clone -q --branch=master https://github.com/alliedmodders/metamod-hl1 metamod-am)
-  - cmd  if not exist hlsdk      (git clone -q --branch=master https://github.com/alliedmodders/hlsdk)
+  - cmd: if not exist hlsdk      (git clone -q --branch=master https://github.com/alliedmodders/hlsdk)
   - cmd: cd ambuild && python setup.py install
   
   - cmd: /"%VS100COMNTOOLS%/../../VC/vcvarsall.bat" x86  # setup mcvc paths 
