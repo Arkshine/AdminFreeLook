@@ -28,8 +28,8 @@ install:
   - cmd: if not exist hlsdk      (git clone -q --branch=master https://github.com/alliedmodders/hlsdk)
   - cmd: cd ambuild && python setup.py install
   
-  - cmd: "%VS100COMNTOOLS%/../../VC/vcvarsall.bat"  # setup mcvc paths, should be x86 by default
-  - cmd: set PATH=%PATH%;C:/Python27/Scripts       # export ambuild script
+  - cmd: call "%VS100COMNTOOLS%/../../VC/vcvarsall.bat" x86  # setup mcvc paths
+  - cmd: set PATH=%PATH%;C:/Python27/Scripts                 # export ambuild script
   
 # build cache
 cache:
