@@ -15,7 +15,7 @@ ke::Vector<ke::AString> ErrorLog;
 
 #if defined(WIN32)
 	void *something
-#enfif
+#endif
 
 float CVarGetFloat(const char* cvarName)
 {
