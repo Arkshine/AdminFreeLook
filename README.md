@@ -89,3 +89,7 @@ Rewritten to be used after Steam February update.
 4. Configure `mp_forcechasecam` and `mp_forcecamera` gameplay cvars. Both should have the same value.
 5. Configure `amx_adminfreelookflag` and `amx_adminfreelookmode` modules cvars.
 6. Restart. 
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Arkshine/adminfreelook/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
