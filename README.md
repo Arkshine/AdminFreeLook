@@ -1,6 +1,7 @@
 AdminFreeLook
 =============
-[![Build Status](https://travis-ci.org/Arkshine/AdminFreeLook.svg?branch=master)](https://travis-ci.org/Arkshine/AdminFreeLook) [![Build status](https://ci.appveyor.com/api/projects/status/gyd7556y6dqr80e3/branch/master?svg=true)](https://ci.appveyor.com/project/Arkshine/adminfreelook/branch/master) [![Coverage Status](https://img.shields.io/coveralls/Arkshine/AdminFreeLook.svg)](https://coveralls.io/r/Arkshine/AdminFreeLook)
+[![Build Status](https://travis-ci.org/Arkshine/AdminFreeLook.svg?branch=master)](https://travis-ci.org/Arkshine/AdminFreeLook) [![Build status](https://ci.appveyor.com/api/projects/status/gyd7556y6dqr80e3/branch/master?svg=true)](https://ci.appveyor.com/project/Arkshine/adminfreelook/branch/master) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Arkshine/adminfreelook/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
 
 AMX Mod X module whichs allows spectating admins to use any camera modes whatever `mp_forcecamera` or `mp_forcechasecam` value.
 This only works for latest HLDS version.
@@ -91,5 +92,4 @@ Rewritten to be used after Steam February update.
 6. Restart. 
 
 
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Arkshine/adminfreelook/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
 
