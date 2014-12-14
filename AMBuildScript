@@ -66,8 +66,6 @@ class AMXXConfig(object):
     return None
 
   def configure(self):
-    #builder.AddConfigureFile('pushbuild.txt')
-
     cfg = builder.DetectCompilers()
     cxx = cfg.cxx
 
@@ -81,7 +79,6 @@ class AMXXConfig(object):
         '-Wno-unused',
         '-Wno-switch',
         '-m32',
-        '--coverage',
       ]
       cfg.cxxflags += [
         '-Wno-invalid-offsetof',

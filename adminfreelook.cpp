@@ -16,18 +16,24 @@ ke::Vector<ke::AString> ErrorLog;
 
 float CVarGetFloat(const char* cvarName)
 {
-	float value = g_engfuncs.pfnCVarGetFloat(cvarName);
-	int numFlags = 0;
+	META_RES result = MRES_IGNORED;
+	int numFlags;
 
-	if (CvarFreeLookEnable->value && value > 0)
+	if (CvarFreeLookEnable->value <= 0 || !CurrentPlayerIndex)
 	{
-		if ((value == FORCECAMERA_ONLY_FRIST_PERSON || UTIL_GetUserMode(numFlags)) && UTIL_IsAdmin(CurrentPlayerIndex))
-		{
-			value = CurrentPlayerIndex = 0;
-		}
+		result = MRES_IGNORED;
 	}
+	else if (g_engfuncs.pfnCVarGetFloat(cvarName) > 0 && (UTIL_GetUserMode(numFlags) || UTIL_IsAdmin(CurrentPlayerIndex)))
+	{
+		result = MRES_SUPERCEDE;
 
-	RETURN_META_VALUE(MRES_SUPERCEDE, value);
+		if (!strcmp(cvarName, "mp_forcecamera")) // just for safety
+		{
+			CurrentPlayerIndex = 0;
+		}
+	}	
+
+	RETURN_META_VALUE(result, 0);
 }
 
 
@@ -95,14 +101,11 @@ DETOUR_DECL_MEMBER1(Observer_SetMode, void, int, mode)
  *
  * @return                 True on success, otherwise false.
  */
-DETOUR_DECL_MEMBER2(Observer_IsValidTarget, BOOL, int, index, bool, checkteam)
+DETOUR_DECL_MEMBER2(Observer_IsValidTarget, void*, int, index, bool, checkteam)
 {
-	bool override = false;
-	int  result = 0;
-
 	if (checkteam && CvarFreeLookEnable->value && UTIL_IsAdmin(UTIL_PrivateToIndex((const void *)this)))
 	{
-		override = true;
+		checkteam = false;
 	}
 
 	return DETOUR_MEMBER_CALL(Observer_IsValidTarget)(index, checkteam);
@@ -115,9 +118,9 @@ void EnableDetours()
 	void *funcIsvalidTarget = UTIL_FindAddressFromEntry(FUNC_ISVALIDTARGET, FUNC_IDENT_HIDDEN_STATE);
 	void *funcSetMode       = UTIL_FindAddressFromEntry(FUNC_SETMODE, FUNC_IDENT_HIDDEN_STATE);
 
-	#if defined(__linux__)
-		FuncSetMode2 = UTIL_FindAddressFromEntry(FUNC_SETMODE2, FUNC_IDENT_HIDDEN_STATE);
-	#endif
+#if defined(__linux__)
+	FuncSetMode2 = UTIL_FindAddressFromEntry(FUNC_SETMODE2, FUNC_IDENT_HIDDEN_STATE);
+#endif
 
 	IsValidTargetDetour   = DETOUR_CREATE_MEMBER_FIXED(Observer_IsValidTarget, funcIsvalidTarget);
 	ObserverSetModeDetour = DETOUR_CREATE_MEMBER_FIXED(Observer_SetMode, funcSetMode);
@@ -134,28 +137,40 @@ void EnableDetours()
 	else
 	{
 		if (!funcIsvalidTarget)
+		{
 			ErrorLog.append(ke::AString("CBasePlayer::Observer_IsValidTarget cound not be found."));
+		}
 
 		if (!funcSetMode)
+		{
 			ErrorLog.append(ke::AString("CBasePlayer::Observer_SetMode cound not be found."));
+		}
 
 	#if defined(__linux__)
 		if (!FuncSetMode2)
+		{
 			ErrorLog.append(ke::AString("CBasePlayer::Observer_SetMode (second part) cound not be found"));
+		}
 	#endif
 
 		if (ObserverSetModeDetour == NULL || IsValidTargetDetour == NULL)
+		{
 			ErrorLog.append(ke::AString("Observer forwards could not be initialized -Disabled module."));
+		}
 	}
 }
 
 void DisableDetours()
 {
 	if (IsValidTargetDetour)
+	{
 		IsValidTargetDetour->Destroy();
+	}
 
 	if (ObserverSetModeDetour)
+	{
 		ObserverSetModeDetour->Destroy();
+	}
 }
 
 void LogOnError()
