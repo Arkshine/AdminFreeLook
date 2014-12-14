@@ -313,7 +313,7 @@ binary = AMXX.MetaModule(builder, 'adminfreelook')
 
 binary.sources = [
   '../public/sdk/amxxmodule.cpp',
-  '../module/amxx_api.cpp',
+  '../module/module.cpp',
   '../module/adminfreelook.cpp',
   '../module/utils.cpp',
   '../public/memtools/MemoryUtils.cpp',
