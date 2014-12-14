@@ -140,7 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\module\adminfreelook.cpp" />
-    <ClCompile Include="..\..\module\amxx_api.cpp" />
+    <ClCompile Include="..\module.cpp" />
     <ClCompile Include="..\..\public\memtools\CDetour\asm\asm.c" />
     <ClCompile Include="..\..\public\memtools\CDetour\detours.cpp" />
     <ClCompile Include="..\..\public\memtools\MemoryUtils.cpp" />
@@ -153,6 +153,7 @@
     <ClInclude Include="..\..\public\memtools\CDetour\detourhelpers.h" />
     <ClInclude Include="..\..\public\memtools\CDetour\detours.h" />
     <ClInclude Include="..\..\public\memtools\MemoryUtils.h" />
+    <ClInclude Include="..\gamedatas.h" />
     <ClInclude Include="..\moduleconfig.h" />
     <ClInclude Include="..\..\public\sdk\amxxmodule.h" />
   </ItemGroup>

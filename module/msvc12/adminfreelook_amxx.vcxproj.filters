@@ -5,7 +5,6 @@
     <ClCompile Include="..\..\public\sdk\amxxmodule.cpp">
       <Filter>Module SDK\SDK Base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\module\amxx_api.cpp" />
     <ClCompile Include="..\..\module\utils.cpp" />
     <ClCompile Include="..\..\public\memtools\MemoryUtils.cpp">
       <Filter>Memtools</Filter>
@@ -16,6 +15,7 @@
     <ClCompile Include="..\..\public\memtools\CDetour\asm\asm.c">
       <Filter>Memtools\CDetour\asm</Filter>
     </ClCompile>
+    <ClCompile Include="..\module.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\public\sdk\amxxmodule.h">
@@ -38,6 +38,9 @@
     </ClInclude>
     <ClInclude Include="..\..\public\memtools\CDetour\asm\asm.h">
       <Filter>Memtools\CDetour\asm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\gamedatas.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
