@@ -4,12 +4,12 @@
 #define __MODULECONFIG_H__
 
 // Module info
-#define MODULE_NAME "Admin Free Look"
-#define MODULE_VERSION "1.5.4"
-#define MODULE_AUTHOR "Arkshine"
-#define MODULE_URL "https://forums.alliedmods.net/showthread.php?t=100067"
-#define MODULE_LOGTAG "ADMINFREELOOK"
-#define MODULE_LIBRARY "adminfreelook"
+#define MODULE_NAME     "Admin Free Look"
+#define MODULE_VERSION  "1.5.4"
+#define MODULE_AUTHOR   "Arkshine"
+#define MODULE_URL      "https://forums.alliedmods.net/showthread.php?t=100067"
+#define MODULE_LOGTAG   "ADMINFREELOOK"
+#define MODULE_LIBRARY  "adminfreelook"
 #define MODULE_LIBCLASS ""
 // If you want the module not to be reloaded on mapchange, remove / comment out the next line
 #define MODULE_RELOAD_ON_MAPCHANGE
