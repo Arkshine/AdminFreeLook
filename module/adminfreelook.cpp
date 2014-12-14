@@ -11,6 +11,7 @@
 //
 
 #include "adminfreelook.h"
+#include "gamedatas.h"
 
 CDetour *ObserverSetModeDetour = NULL;
 CDetour *IsValidTargetDetour = NULL;

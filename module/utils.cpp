@@ -11,6 +11,7 @@
 //
 
 #include "adminfreelook.h"
+#include "gamedatas.h"
 
 void *UTIL_FindAddressFromEntry(const char *entry, bool isHidden, const char *library)
 {
