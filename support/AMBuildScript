@@ -207,6 +207,7 @@ class AMXXConfig(object):
     ]
 
     cfg.includes += [os.path.join(builder.buildPath, 'includes')]
+    cfg.includes += [os.path.join(builder.sourcePath, 'module')]
     cfg.includes += [os.path.join(builder.sourcePath, 'public')]
     cfg.includes += [os.path.join(builder.sourcePath, 'public', 'amtl')]
     cfg.includes += [os.path.join(builder.sourcePath, 'public', 'memtools')]
@@ -310,10 +311,10 @@ AMXX.configure()
 binary = AMXX.MetaModule(builder, 'adminfreelook')
 
 binary.sources = [
-  'sdk/amxxmodule.cpp',
-  'amxx_api.cpp',
-  'adminfreelook.cpp',
-  'utils.cpp',
+  'public/sdk/amxxmodule.cpp',
+  'module/amxx_api.cpp',
+  'module/adminfreelook.cpp',
+  'module/utils.cpp',
   'public/memtools/MemoryUtils.cpp',
   'public/memtools/CDetour/detours.cpp',
   'public/memtools/CDetour/asm/asm.c'
