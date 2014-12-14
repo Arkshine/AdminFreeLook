@@ -17,8 +17,6 @@ CDetour *ObserverSetModeDetour = NULL;
 CDetour *IsValidTargetDetour = NULL;
 
 int CurrentPlayerIndex = 0;
-bool ForceNextMode = false;
-
 ke::Vector<ke::AString> ErrorLog;
 
 #if defined(__linux__)
