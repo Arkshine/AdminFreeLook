@@ -13,9 +13,9 @@
 #ifndef ADMINFREELOOK_H
 #define ADMINFREELOOK_H
 
-#include "amxxmodule.h"
-#include "MemoryUtils.h"
-#include "CDetour/detours.h"
+#include <amxxmodule.h>
+#include <MemoryUtils.h>
+#include <CDetour/detours.h>
 #include <am-string.h>
 #include <am-vector.h>
 

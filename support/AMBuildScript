@@ -22,8 +22,8 @@ class AMXXConfig(object):
         raise Exception('Metamod path does not exist: {0}'.format(metamod_path))
     else:
       try_paths = [
-        os.path.join(builder.sourcePath, '..', 'metamod'),
-        os.path.join(builder.sourcePath, '..', 'metamod-am'),
+        os.path.join(builder.sourcePath, '..', '..', 'metamod'),
+        os.path.join(builder.sourcePath, '..', '..', 'metamod-am'),
       ]
       for try_path in try_paths:
         if os.path.exists(os.path.join(try_path, 'metamod')):
@@ -43,7 +43,7 @@ class AMXXConfig(object):
         raise Exception('Metamod path does not exist: {0}'.format(hlsdk_path))
     else:
       try_paths = [
-        os.path.join(builder.sourcePath, '..', 'hlsdk'),
+        os.path.join(builder.sourcePath, '..', '..', 'hlsdk'),
       ]
       for try_path in try_paths:
         if os.path.exists(try_path):
@@ -206,11 +206,12 @@ class AMXXConfig(object):
       'AMBUILD',
     ]
 
-    cfg.includes += [os.path.join(builder.buildPath, 'includes')]
-    cfg.includes += [os.path.join(builder.sourcePath, 'module')]
-    cfg.includes += [os.path.join(builder.sourcePath, 'public')]
-    cfg.includes += [os.path.join(builder.sourcePath, 'public', 'amtl')]
-    cfg.includes += [os.path.join(builder.sourcePath, 'public', 'memtools')]
+    cfg.includes += [os.path.join(builder.buildPath , '..', 'includes')]
+    cfg.includes += [os.path.join(builder.sourcePath, '..', 'module')]
+    cfg.includes += [os.path.join(builder.sourcePath, '..', 'public')]
+    cfg.includes += [os.path.join(builder.sourcePath, '..', 'public', 'sdk')]
+    cfg.includes += [os.path.join(builder.sourcePath, '..', 'public', 'amtl')]
+    cfg.includes += [os.path.join(builder.sourcePath, '..', 'public', 'memtools')]
     return
 
   #
@@ -311,13 +312,13 @@ AMXX.configure()
 binary = AMXX.MetaModule(builder, 'adminfreelook')
 
 binary.sources = [
-  'public/sdk/amxxmodule.cpp',
-  'module/amxx_api.cpp',
-  'module/adminfreelook.cpp',
-  'module/utils.cpp',
-  'public/memtools/MemoryUtils.cpp',
-  'public/memtools/CDetour/detours.cpp',
-  'public/memtools/CDetour/asm/asm.c'
+  '../public/sdk/amxxmodule.cpp',
+  '../module/amxx_api.cpp',
+  '../module/adminfreelook.cpp',
+  '../module/utils.cpp',
+  '../public/memtools/MemoryUtils.cpp',
+  '../public/memtools/CDetour/detours.cpp',
+  '../public/memtools/CDetour/asm/asm.c'
 ]
 
 builder.Add(binary)
