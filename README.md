@@ -1,6 +1,7 @@
 AdminFreeLook
 =============
-[![Build Status](https://travis-ci.org/Arkshine/AdminFreeLook.svg?branch=master)](https://travis-ci.org/Arkshine/AdminFreeLook) [![Build status](https://ci.appveyor.com/api/projects/status/gyd7556y6dqr80e3/branch/master?svg=true)](https://ci.appveyor.com/project/Arkshine/adminfreelook/branch/master) [![Coverage Status](https://img.shields.io/coveralls/Arkshine/AdminFreeLook.svg)](https://coveralls.io/r/Arkshine/AdminFreeLook)
+[![Build Status](https://travis-ci.org/Arkshine/AdminFreeLook.svg?branch=master)](https://travis-ci.org/Arkshine/AdminFreeLook) [![Build status](https://ci.appveyor.com/api/projects/status/gyd7556y6dqr80e3/branch/master?svg=true)](https://ci.appveyor.com/project/Arkshine/adminfreelook/branch/master) [![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/Arkshine/adminfreelook/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
 
 AMX Mod X module whichs allows spectating admins to use any camera modes whatever `mp_forcecamera` or `mp_forcechasecam` value.
 This only works for latest HLDS version.
@@ -83,7 +84,20 @@ Rewritten to be used after Steam February update.
   
 ##Installation
 
-1. From [Releases section](https://github.com/Arkshine/AdminFreeLook/releases/latest), get the `adminfreelook.dll` (windows) or `adminfreelook.so` (linux) file
+1. From [Releases section](https://github.com/Arkshine/AdminFreeLook/releases/latest), get the binary file:  <table>
+  <tbody>
+    <tr>
+      <th align="center">OS</th>
+      <th align="center">Windows</th>
+      <th align="center">Linux</th>
+    </tr>
+    <tr>
+      <td align="center">Binary file</td>
+      <td align="center">`adminfreelook_amxx.dll`</td>
+      <td align="center">`adminfreelook_amxx_i386.so`</td>
+    </tr>
+  </tbody>
+</table>
 2. Upload it in your *amxmodx/modules/* folder.
 3. Open your *configs/modules.ini* and add at the end `adminfreelook`
 4. Configure `mp_forcechasecam` and `mp_forcecamera` gameplay cvars. Both should have the same value.
