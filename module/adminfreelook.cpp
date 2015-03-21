@@ -69,6 +69,18 @@ DETOUR_DECL_MEMBER1(Observer_SetMode, void, int, mode)
 	CurrentPlayerIndex = UTIL_PrivateToIndex(pvPlayer);
 
 	g_pengfuncsTable->pfnCVarGetFloat = CVarGetFloat;
+	
+#if defined(WIN32) || defined(__APPLE__)
+
+	DETOUR_MEMBER_CALL(Observer_SetMode)(mode);
+
+#elif defined(__linux__)
+
+	ObserverSetModeDetour->DisableDetour();
+	((void(*)(void*, int))FuncSetMode2)((void *)pvPlayer, mode);
+	ObserverSetModeDetour->EnableDetour();
+
+#endif
 
 	if (!UTIL_IsAdmin(CurrentPlayerIndex))
 	{
