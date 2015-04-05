@@ -63,6 +63,6 @@ if [ $? -eq 1 ]; then
   else
     python setup.py build
     echo "About to install AMBuild - press Ctrl+C to abort, otherwise enter your password for sudo."
-    sudo python setup.py install
+    python setup.py install
   fi
 fi
