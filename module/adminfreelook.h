@@ -18,12 +18,15 @@ void InitDetours();
 void DestroyDetours();
 void LogOnError();
 
-extern cvar_t afl_enabled;
-extern cvar_t afl_admin_access_flags;
-extern cvar_t afl_user_override_mode;
+extern cvar_t *CvarEnabled;
+extern cvar_t *CvarAdminAccessFlags;
+extern cvar_t *CvarUserOverrideMode;
+
+extern cvar_t *CvarFadeToblack;
+extern cvar_t *CvarForceCamera;
+extern cvar_t *CvarForceChaseCam;
 
 extern enginefuncs_t* g_pengfuncsTable;
-extern int CurrentPlayerIndex;
 extern ke::Vector<ke::AString> ErrorLogs;
 extern HLTypeConversion TypeConversion;
 

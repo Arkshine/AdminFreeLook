@@ -9,9 +9,13 @@
 namespace Util
 {
 	void *FindAddress(const char *entry, const char *library = "mod");
-	int ReadFlags(const char* c, int& numFlags);
-	bool IsAdmin(int index);
+
+	int ReadFlags(const char* flags, int *numFlags = nullptr);
+
+	bool IsAdmin(edict_t *pPlayer);
+	bool ShouldRunCode();
+
 	int GetFlagPosition(int flag);
-	int GetUserMode(int& numFlags);
-	int GetNextUserMode(int currentMode, int allowedModes);
+	int GetUserMode(int *numFlags = nullptr);
+	int GetNextUserMode(edict_t *pPlayer, int userFlags);
 };

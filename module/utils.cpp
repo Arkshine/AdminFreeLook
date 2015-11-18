@@ -61,7 +61,7 @@ namespace Util
 		return finalAddress;
 	}
 
-	int ReadFlags(const char* c, int& numFlags)
+	int ReadFlags(const char* c, int* numFlags)
 	{
 		auto flags = 0;
 
@@ -70,19 +70,27 @@ namespace Util
 			if (*c >= 'a' && *c <= 'z')
 			{
 				flags |= (1 << (*c - 'a'));
-				numFlags++;
+
+				if (numFlags)
+				{
+					++*numFlags;
+				}
 			}
 
 			*c++;
 		}
 
-		return numFlags ? flags : 0;
+		return flags;
 	}
 
-	bool IsAdmin(int index)
+	bool IsAdmin(edict_t *pPlayer)
 	{
-		auto numFlags = 0;
-		return !!(ReadFlags(afl_admin_access_flags.string, numFlags) & MF_GetPlayerFlags(index));
+		return !!(ReadFlags(CvarAdminAccessFlags->string, nullptr) & MF_GetPlayerFlags(TypeConversion.edict_to_id(pPlayer)));
+	}
+
+	bool ShouldRunCode()
+	{
+		return CvarEnabled->value > 0.0f && CvarFadeToblack->value <= 0.0f && CvarForceCamera->value > 0.0f && CvarForceChaseCam->value > 0.0f;
 	}
 
 	int GetFlagPosition(int flag)
@@ -97,18 +105,20 @@ namespace Util
 		return c;
 	}
 
-	int GetUserMode(int& numFlags)
+	int GetUserMode(int *numFlags)
 	{
-		return ReadFlags(afl_user_override_mode.string, numFlags);
+		return ReadFlags(CvarUserOverrideMode->string, numFlags);
 	}
 
-	int GetNextUserMode(int currentMode, int allowedModes)
+	int GetNextUserMode(edict_t *pPlayer, int userFlags)
 	{
+		auto currentMode = pPlayer->v.iuser1;
+
 		for (auto i = OBS_NONE; i < OBS_MAP_CHASE; ++i)
 		{
 			currentMode = (currentMode % OBS_MAP_CHASE) + 1;
 
-			if ((!allowedModes || 1 << (currentMode - 1) & allowedModes) && TypeConversion.id_to_edict(CurrentPlayerIndex)->v.iuser1 != currentMode)
+			if ((!userFlags || 1 << (currentMode - 1) & userFlags) && pPlayer->v.iuser1 != currentMode)
 			{
 				break;
 			}

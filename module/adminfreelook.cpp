@@ -27,25 +27,14 @@ ke::Vector<ke::AString> ErrorLogs;
 
 #endif
 
+
 float CVarGetFloat(const char* cvarName)
 {
 	auto currentValue = g_engfuncs.pfnCVarGetFloat(cvarName);
 
-	if (afl_enabled.value <= 0.0f || !CurrentPlayerIndex)
-	{
-		RETURN_META_VALUE(MRES_IGNORED, currentValue);
-	}
-
-	int numFlags;
-
-	if (currentValue > 0.0f && (Util::GetUserMode(numFlags) || Util::IsAdmin(CurrentPlayerIndex)))
+	if (strcmp(cvarName, "mp_forcecamera") == 0 || strcmp(cvarName, "mp_forcechasecam") == 0)
 	{
 		currentValue = 0.0f;
-
-		if (strcmp(cvarName, "mp_forcecamera") == 0 || strcmp(cvarName, "mp_forcechasecam") == 0) // just for safety
-		{
-			CurrentPlayerIndex = 0;
-		}
 	}
 
 	RETURN_META_VALUE(MRES_SUPERCEDE, currentValue);
@@ -73,24 +62,24 @@ DETOUR_DECL_MEMBER1(Observer_SetMode, void, int, mode)
 
 	#endif
 
-	CurrentPlayerIndex = TypeConversion.cbase_to_id(pvPlayer);
-
-	g_pengfuncsTable->pfnCVarGetFloat = CVarGetFloat;
-
-	if (!Util::IsAdmin(CurrentPlayerIndex))
+	if (Util::ShouldRunCode())
 	{
-		auto numFlags = 0;
-		auto userMode = Util::GetUserMode(numFlags);
+		auto pPlayer = TypeConversion.cbase_to_edict(pvPlayer);
 
-		if (numFlags)
+		if (Util::IsAdmin(pPlayer))
 		{
-			if (numFlags == 1)
+			g_pengfuncsTable->pfnCVarGetFloat = CVarGetFloat;
+		}
+		else
+		{
+			auto numFlags = 0;
+			auto userFlags = Util::GetUserMode(&numFlags);
+
+			if (numFlags)
 			{
-				mode = Util::GetFlagPosition(userMode);
-			}
-			else
-			{
-				mode = Util::GetNextUserMode(TypeConversion.id_to_edict(CurrentPlayerIndex)->v.iuser1, userMode);
+				g_pengfuncsTable->pfnCVarGetFloat = CVarGetFloat;
+
+				mode = (numFlags == 1) ? Util::GetFlagPosition(userFlags) : Util::GetNextUserMode(pPlayer, userFlags);
 			}
 		}
 	}
@@ -107,7 +96,10 @@ DETOUR_DECL_MEMBER1(Observer_SetMode, void, int, mode)
 
 #endif
 
-	g_pengfuncsTable->pfnCVarGetFloat = nullptr;
+	if (g_pengfuncsTable->pfnCVarGetFloat)
+	{
+		g_pengfuncsTable->pfnCVarGetFloat = nullptr;
+	}
 }
 
 /**
@@ -120,9 +112,17 @@ DETOUR_DECL_MEMBER1(Observer_SetMode, void, int, mode)
  */
 DETOUR_DECL_MEMBER2(Observer_IsValidTarget, void*, int, index, bool, checkteam)
 {
-	if (checkteam && afl_enabled.value > 0.0f && Util::IsAdmin(TypeConversion.cbase_to_id(reinterpret_cast<void*>(this))))
+	if (Util::ShouldRunCode())
 	{
-		checkteam = false;
+		if (checkteam && Util::IsAdmin(TypeConversion.cbase_to_edict(reinterpret_cast<void*>(this))))
+		{
+			checkteam = false;
+		}
+
+		if (g_pengfuncsTable->pfnCVarGetFloat)
+		{
+			g_pengfuncsTable->pfnCVarGetFloat = nullptr;
+		}
 	}
 
 	return DETOUR_MEMBER_CALL(Observer_IsValidTarget)(index, checkteam);
