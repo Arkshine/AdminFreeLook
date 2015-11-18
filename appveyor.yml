@@ -26,14 +26,14 @@ install:
   - cmd: if not exist ambuild    (git clone -q --branch=master https://github.com/alliedmodders/ambuild)
   - cmd: if not exist metamod-am (git clone -q --branch=master https://github.com/alliedmodders/metamod-hl1 metamod-am)
   - cmd: if not exist hlsdk      (git clone -q --branch=master https://github.com/alliedmodders/hlsdk)
+  - cmd: if not exist amxmodx    (git clone --recursive -q --branch=master https://github.com/alliedmodders/amxmodx)
   - cmd: cd ambuild && python setup.py install
   
-  - cmd: call "%VS100COMNTOOLS%/../../VC/vcvarsall.bat" x86  # setup mcvc paths
-  - cmd: set PATH=%PATH%;C:/Python27/Scripts                 # export ambuild script
+  - cmd: call "%VS120COMNTOOLS%\vsvars32.bat"
+  - cmd: set PATH=%PATH%;C:/Python27/Scripts
   
 # build cache
 cache:
-  - ambuild
   - metamod-am
   - hlsdk
 
