@@ -1,23 +1,22 @@
 addons:
   apt:
     packages:
-    - clang-3.5
     - lib32stdc++6
     - lib32z1-dev
     - libc6-dev-i386
     - linux-libc-dev
+    - gcc-multilib
     - g++-multilib
-    - g++4.8
 language: cpp
 sudo: false
 compiler:
   - clang
 before_script:
-  - CHECKOUT_DIR=$PWD && cd ..
-  - chmod a+x $CHECKOUT_DIR/support/checkout-deps.sh
+  - CHECKOUT_DIR=$PWD && cd .. 
+  - chmod a+x $CHECKOUT_DIR/support/checkout-deps.sh 
   - $CHECKOUT_DIR/support/checkout-deps.sh && cd $CHECKOUT_DIR
 script:
   - mkdir build && cd build
   - PATH="~/.local/bin:$PATH"
-  - CC=clang-3.5 CXX=clang-3.5 python ../support/configure.py --enable-optimize --no-mysql
+  - python ../support/configure.py --enable-optimize
   - ambuild
