@@ -80,6 +80,11 @@ DETOUR_DECL_MEMBER1(Observer_SetMode, void, int, mode)
 				g_pengfuncsTable->pfnCVarGetFloat = CVarGetFloat;
 
 				mode = (numFlags == 1) ? Util::GetFlagPosition(userFlags) : Util::GetNextUserMode(pPlayer, userFlags);
+
+				if (pPlayer->v.iuser1 == OBS_NONE) // When starting to observe, force to update target.
+				{
+					get_pdata<EHANDLE>(pPlayer, m_hObserverTarget).Set(nullptr);
+				}
 			}
 		}
 	}
@@ -114,9 +119,18 @@ DETOUR_DECL_MEMBER2(Observer_IsValidTarget, void*, int, index, bool, checkteam)
 {
 	if (Util::ShouldRunCode())
 	{
-		if (checkteam && Util::IsAdmin(TypeConversion.cbase_to_edict(reinterpret_cast<void*>(this))))
+		auto isAdmin = Util::IsAdmin(TypeConversion.cbase_to_edict(reinterpret_cast<void*>(this)));
+
+		if (isAdmin)
 		{
-			checkteam = false;
+			if (checkteam)
+			{
+				checkteam = false;
+			}
+		}
+		else if (!checkteam && Util::GetUserMode())
+		{
+			checkteam = true;
 		}
 
 		if (g_pengfuncsTable->pfnCVarGetFloat)

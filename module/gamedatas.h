@@ -14,16 +14,22 @@
 	#define FUNC_SETMODE            "\\x83\\x2A\\x2A\\x55\\x8B\\x2A\\x2A\\x2A\\x56\\x8B\\x2A\\x8B"
 	#define FUNC_ISVALIDTARGET      "\\x8B\\x2A\\x2A\\x2A\\x56\\x8B\\x2A\\x8B\\x2A\\x2A\\x2A\\x2A\\x2A\\x3B"
 
+	#define m_hObserverTarget       392
+
 #elif defined(KE_LINUX)
 
 	#define FUNC_SETMODE            "\\x55\\x57\\x56\\x89\\x2A\\x53\\x89\\x2A\\x83\\x2A\\x2A\\xD9\\x2A\\xD9"
 	#define FUNC_SETMODE2           "_ZN11CBasePlayer16Observer_SetModeEi"
 	#define FUNC_ISVALIDTARGET      "_ZN11CBasePlayer22Observer_IsValidTargetEib"
 
+	#define m_hObserverTarget       412
+
 #elif defined(KE_MACOSX)
 
 	#define FUNC_SETMODE            "_ZN11CBasePlayer16Observer_SetModeEi"
 	#define FUNC_ISVALIDTARGET      "_ZN11CBasePlayer22Observer_IsValidTargetEib"
+
+	#define m_hObserverTarget       412
 
 #endif
 
