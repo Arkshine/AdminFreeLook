@@ -8,15 +8,15 @@
 
 #include "adminfreelook.h"
 
-cvar_t amx_adminfreelook     = { "amx_adminfreelook", "1", 1, 1.0 };
-cvar_t amx_adminfreelookflag = { "amx_adminfreelookflag", "d" };
-cvar_t amx_adminfreelookmode = { "amx_adminfreelookmode", "0" };
+cvar_t afl_enabled            = { "afl_enabled"           , "1", 1, 1.0 };
+cvar_t afl_admin_access_flags = { "afl_admin_access_flags", "d" };
+cvar_t afl_user_override_mode = { "afl_user_override_mode", "0" };
 
 void OnAmxxAttach()
 {
-	CVAR_REGISTER(&amx_adminfreelook);
-	CVAR_REGISTER(&amx_adminfreelookflag);
-	CVAR_REGISTER(&amx_adminfreelookmode);
+	CVAR_REGISTER(&afl_enabled);
+	CVAR_REGISTER(&afl_admin_access_flags);
+	CVAR_REGISTER(&afl_user_override_mode);
 
 	InitDetours();
 

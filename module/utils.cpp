@@ -82,7 +82,7 @@ namespace Util
 	bool IsAdmin(int index)
 	{
 		auto numFlags = 0;
-		return !!(ReadFlags(amx_adminfreelookflag.string, numFlags) & MF_GetPlayerFlags(index));
+		return !!(ReadFlags(afl_admin_access_flags.string, numFlags) & MF_GetPlayerFlags(index));
 	}
 
 	int GetFlagPosition(int flag)
@@ -99,7 +99,7 @@ namespace Util
 
 	int GetUserMode(int& numFlags)
 	{
-		return ReadFlags(amx_adminfreelookmode.string, numFlags);
+		return ReadFlags(afl_user_override_mode.string, numFlags);
 	}
 
 	int GetNextUserMode(int currentMode, int allowedModes)

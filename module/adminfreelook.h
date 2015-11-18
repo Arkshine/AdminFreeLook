@@ -18,9 +18,9 @@ void InitDetours();
 void DestroyDetours();
 void LogOnError();
 
-extern cvar_t amx_adminfreelook;
-extern cvar_t amx_adminfreelookflag;
-extern cvar_t amx_adminfreelookmode;
+extern cvar_t afl_enabled;
+extern cvar_t afl_admin_access_flags;
+extern cvar_t afl_user_override_mode;
 
 extern enginefuncs_t* g_pengfuncsTable;
 extern int CurrentPlayerIndex;

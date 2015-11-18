@@ -20,7 +20,7 @@ Rewritten to be used after Steam February update.
    `1` : Observers can only spectate his own team.  
    `2` : Observers can only spectate his own team and in-eye mode only.  
 
-* __`amx_adminfreelook`__
+* __`afl_enabled`__
  
   Module state. Whether you want to activate module functionnalities.  
 
@@ -29,7 +29,7 @@ Rewritten to be used after Steam February update.
   
   Default value : *"1"*
 
-* __`amx_adminfreelookflag`__  
+* __`afl_admin_access_flags`__  
 
   Admin's access flags.  
   Ability to observe without being restricted by gameplay cvar.  
@@ -66,7 +66,7 @@ Rewritten to be used after Steam February update.
   
   Default value : *"d"*
 
-* __`amx_adminfreelookmode`__
+* __`afl_user_override_mode`__
 
   This will force *non-admin* players to use specific modes only.  
   Flags are additives.
@@ -101,5 +101,5 @@ Rewritten to be used after Steam February update.
 2. Upload it in your *amxmodx/modules/* folder.
 3. Open your *configs/modules.ini* and add at the end `adminfreelook`
 4. Configure `mp_forcechasecam` and `mp_forcecamera` gameplay cvars. Both should have the same value.
-5. Configure `amx_adminfreelookflag` and `amx_adminfreelookmode` modules cvars.
+5. Configure `afl_admin_access_flags` and `afl_user_override_mode` modules cvars.
 6. Restart. 

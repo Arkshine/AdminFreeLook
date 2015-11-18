@@ -31,7 +31,7 @@ float CVarGetFloat(const char* cvarName)
 {
 	auto currentValue = g_engfuncs.pfnCVarGetFloat(cvarName);
 
-	if (amx_adminfreelook.value <= 0.0f || !CurrentPlayerIndex)
+	if (afl_enabled.value <= 0.0f || !CurrentPlayerIndex)
 	{
 		RETURN_META_VALUE(MRES_IGNORED, currentValue);
 	}
@@ -120,7 +120,7 @@ DETOUR_DECL_MEMBER1(Observer_SetMode, void, int, mode)
  */
 DETOUR_DECL_MEMBER2(Observer_IsValidTarget, void*, int, index, bool, checkteam)
 {
-	if (checkteam && amx_adminfreelook.value > 0.0f && Util::IsAdmin(TypeConversion.cbase_to_id(reinterpret_cast<void*>(this))))
+	if (checkteam && afl_enabled.value > 0.0f && Util::IsAdmin(TypeConversion.cbase_to_id(reinterpret_cast<void*>(this))))
 	{
 		checkteam = false;
 	}
