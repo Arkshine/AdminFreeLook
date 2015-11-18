@@ -1,147 +1,120 @@
 //
-// AMX Mod X, based on AMX Mod by Aleksander Naszko ("OLO").
-// Copyright (C) The AMX Mod X Development Team.
+// AdminFreeLook AMX Mod X Module
+// Copyright (C) Vincent Herbet (Arkshine)
 //
-// This software is licensed under the GNU General Public License, version 3 or higher.
-// Additional exceptions apply. For full license details, see LICENSE.txt or visit:
-//     https://alliedmods.net/amxmodx-license
-
-//
-// AdminFreeLook Module
+// This software is licensed under the GNU General Public License, version 2.
+// For full license details, see LICENSE file.
 //
 
 #include "adminfreelook.h"
 #include "gamedatas.h"
+#include <MemoryUtils.h>
 
-void *UTIL_FindAddressFromEntry(const char *entry, bool isHidden, const char *library)
+namespace Util
 {
-	void *addressInBase = NULL;
-	void *finalAddress;
-
-	if (strcmp(library, "mod") == 0)
+	void *FindAddress(const char *entry, const char *library)
 	{
-		addressInBase = (void *)MDLL_Spawn;
-	}
-	else if (strcmp(library, "engine") == 0)
-	{
-		addressInBase = (void *)gpGlobals;
-	}
+		void *addressInBase = nullptr;
+		void *finalAddress = nullptr;
 
-	finalAddress = NULL;
-
-	if (*entry != '\\')
-	{
-#if defined(WIN32)
-
-		MEMORY_BASIC_INFORMATION mem;
-
-		if (VirtualQuery(addressInBase, &mem, sizeof(mem)))
+		if (strcmp(library, "mod") == 0)
 		{
-			finalAddress = g_MemUtils.ResolveSymbol(mem.AllocationBase, entry);
+			addressInBase = reinterpret_cast<void*>(MDLL_Spawn);
+		}
+		else if (strcmp(library, "engine") == 0)
+		{
+			addressInBase = reinterpret_cast<void*>(gpGlobals);
 		}
 
-#elif defined(__linux__) || defined(__APPLE__)
-
-		Dl_info info;
-		void *handle = NULL;
-
-		if (dladdr(addressInBase, &info) != 0)
+		if (*entry != '\\')
 		{
-			void *handle = dlopen(info.dli_fname, RTLD_NOW);
-			if (handle)
+		#if defined(KE_WINDOWS)
+
+			MEMORY_BASIC_INFORMATION mem;
+
+			if (VirtualQuery(addressInBase, &mem, sizeof(mem)))
 			{
-				if (isHidden)
+				finalAddress = g_MemUtils.ResolveSymbol(mem.AllocationBase, entry);
+			}
+
+		#elif defined(KE_LINUX) || defined(KE_MACOSX)
+
+			Dl_info info;
+			void *handle = nullptr;
+
+			if (dladdr(addressInBase, &info) != 0)
+			{
+				void *handle = dlopen(info.dli_fname, RTLD_NOW);
+				if (handle)
 				{
 					finalAddress = g_MemUtils.ResolveSymbol(handle, entry);
+					dlclose(handle);
 				}
-				else
-				{
-					finalAddress = dlsym(handle, entry);
-				}
+			}
+		#endif
+		}
+		else
+		{
+			finalAddress = g_MemUtils.DecodeAndFindPattern(addressInBase, entry);
+		}
 
-				dlclose(handle);
+		return finalAddress;
+	}
+
+	int ReadFlags(const char* c, int& numFlags)
+	{
+		auto flags = 0;
+
+		while (*c)
+		{
+			if (*c >= 'a' && *c <= 'z')
+			{
+				flags |= (1 << (*c - 'a'));
+				numFlags++;
+			}
+
+			*c++;
+		}
+
+		return numFlags ? flags : 0;
+	}
+
+	bool IsAdmin(int index)
+	{
+		auto numFlags = 0;
+		return !!(ReadFlags(amx_adminfreelookflag.string, numFlags) & MF_GetPlayerFlags(index));
+	}
+
+	int GetFlagPosition(int flag)
+	{
+		int c;
+
+		for (c = 0; flag; flag >>= 1)
+		{
+			c++;
+		}
+
+		return c;
+	}
+
+	int GetUserMode(int& numFlags)
+	{
+		return ReadFlags(amx_adminfreelookmode.string, numFlags);
+	}
+
+	int GetNextUserMode(int currentMode, int allowedModes)
+	{
+		for (auto i = OBS_NONE; i < OBS_MAP_CHASE; ++i)
+		{
+			currentMode = (currentMode % OBS_MAP_CHASE) + 1;
+
+			if ((!allowedModes || 1 << (currentMode - 1) & allowedModes) && TypeConversion.id_to_edict(CurrentPlayerIndex)->v.iuser1 != currentMode)
+			{
+				break;
 			}
 		}
-#endif
+
+		return currentMode;
 	}
-	else
-	{
-		finalAddress = g_MemUtils.DecodeAndFindPattern(addressInBase, entry);
-	}
+};
 
-	return finalAddress != NULL ? finalAddress : NULL;
-}
-
-int UTIL_PrivateToIndex(const void* pdata)
-{
-	if (pdata)
-	{
-		char* ptr = (char*)pdata;
-		ptr += 4;
-
-		entvars_t* pev = *(entvars_t**)ptr;
-
-		if (pev && pev->pContainingEntity)
-		{
-			return ENTINDEX(pev->pContainingEntity);
-		}
-	}
-
-	return 0;
-}
-
-int UTIL_ReadFlags(const char* c, int& numFlags)
-{
-	int flags = 0;
-
-	while (*c)
-	{
-		if (*c >= 'a' && *c <= 'z')
-		{
-			flags |= (1 << (*c - 'a'));
-			numFlags++;
-		}
-
-		*c++;
-	}
-
-	return numFlags ? flags : 0;
-}
-
-bool UTIL_IsAdmin(int index)
-{
-	int numFlags = 0;
-	return !!(UTIL_ReadFlags(CvarFreeLookFlags->string, numFlags) & MF_GetPlayerFlags(index));
-}
-
-int UTIL_GetFlagPosition(int flag)
-{
-	int c;
-
-	for (c = 0; flag; flag >>= 1)
-	{
-		c++;
-	}
-
-	return c;
-}
-
-int UTIL_GetUserMode(int& numFlags)
-{
-	return UTIL_ReadFlags(CvarFreeLookMode->string, numFlags);
-}
-
-int UTIL_GetNextUserMode(int currentMode, int allowedModes)
-{
-	for (int i = OBS_NONE; i < OBS_MAP_CHASE; i++)
-	{
-		currentMode = (currentMode % OBS_MAP_CHASE) + 1;
-
-		if ((!allowedModes || 1 << (currentMode - 1) & allowedModes) && INDEXENT2(CurrentPlayerIndex)->v.iuser1 != currentMode)
-		{
-			break;
-		}
-	}
-
-	return currentMode;
-}

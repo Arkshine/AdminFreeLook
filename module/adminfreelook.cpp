@@ -1,106 +1,113 @@
 //
-// AMX Mod X, based on AMX Mod by Aleksander Naszko ("OLO").
-// Copyright (C) The AMX Mod X Development Team.
+// AdminFreeLook AMX Mod X Module
+// Copyright (C) Vincent Herbet (Arkshine)
 //
-// This software is licensed under the GNU General Public License, version 3 or higher.
-// Additional exceptions apply. For full license details, see LICENSE.txt or visit:
-//     https://alliedmods.net/amxmodx-license
-
-//
-// AdminFreeLook Module
+// This software is licensed under the GNU General Public License, version 2.
+// For full license details, see LICENSE file.
 //
 
 #include "adminfreelook.h"
 #include "gamedatas.h"
+#include "utils.h"
 
-CDetour *ObserverSetModeDetour = NULL;
-CDetour *IsValidTargetDetour = NULL;
+#include <CDetour/detours.h>
 
-int CurrentPlayerIndex = 0;
-ke::Vector<ke::AString> ErrorLog;
+CDetour *ObserverSetModeDetour;
+CDetour *IsValidTargetDetour;
 
-#if defined(__linux__)
-	void *FuncSetMode2 = NULL;
+HLTypeConversion TypeConversion;
+
+int CurrentPlayerIndex;
+ke::Vector<ke::AString> ErrorLogs;
+
+#if defined(KE_LINUX)
+
+	typedef void(*SetModePart2Fn)(void*, int);
+	SetModePart2Fn SetModePart2;
+
 #endif
-
 
 float CVarGetFloat(const char* cvarName)
 {
-	META_RES result = MRES_IGNORED;
+	auto currentValue = g_engfuncs.pfnCVarGetFloat(cvarName);
+
+	if (amx_adminfreelook.value <= 0.0f || !CurrentPlayerIndex)
+	{
+		RETURN_META_VALUE(MRES_IGNORED, currentValue);
+	}
+
 	int numFlags;
 
-	if (CvarFreeLookEnable->value <= 0 || !CurrentPlayerIndex)
+	if (currentValue > 0.0f && (Util::GetUserMode(numFlags) || Util::IsAdmin(CurrentPlayerIndex)))
 	{
-		result = MRES_IGNORED;
-	}
-	else if (g_engfuncs.pfnCVarGetFloat(cvarName) > 0 && (UTIL_GetUserMode(numFlags) || UTIL_IsAdmin(CurrentPlayerIndex)))
-	{
-		result = MRES_SUPERCEDE;
+		currentValue = 0.0f;
 
-		if (!strcmp(cvarName, "mp_forcecamera")) // just for safety
+		if (strcmp(cvarName, "mp_forcecamera") == 0 || strcmp(cvarName, "mp_forcechasecam") == 0) // just for safety
 		{
 			CurrentPlayerIndex = 0;
 		}
-	}	
+	}
 
-	RETURN_META_VALUE(result, 0);
+	RETURN_META_VALUE(MRES_SUPERCEDE, currentValue);
 }
 
 
 /**
  * void CBasePlayer::Observer_SetMode(int mode)
- * 
+ *
  * @param mode        Observer mode.
  * @noreturn
  */
-DETOUR_DECL_MEMBER1(Observer_SetMode, void, int, mode) 
+DETOUR_DECL_MEMBER1(Observer_SetMode, void, int, mode)
 {
-	const void *pvPlayer = (const void *)this;
+	auto pvPlayer = reinterpret_cast<void*>(this);
 
-	#if defined(__linux__)
+	#if defined(KE_LINUX)
+
 		asm volatile
 		(
 			"movl %%edx, %0;"
 			"movl %%eax, %1;"
 			: "=d" (mode), "=a" (pvPlayer) : :
 		);
+
 	#endif
 
-	CurrentPlayerIndex = UTIL_PrivateToIndex(pvPlayer);
+	CurrentPlayerIndex = TypeConversion.cbase_to_id(pvPlayer);
 
 	g_pengfuncsTable->pfnCVarGetFloat = CVarGetFloat;
 
-	if (!UTIL_IsAdmin(CurrentPlayerIndex))
+	if (!Util::IsAdmin(CurrentPlayerIndex))
 	{
-		int numFlags = 0;
-		int userMode = UTIL_GetUserMode(numFlags);
+		auto numFlags = 0;
+		auto userMode = Util::GetUserMode(numFlags);
 
 		if (numFlags)
 		{
 			if (numFlags == 1)
 			{
-				mode = UTIL_GetFlagPosition(userMode);
+				mode = Util::GetFlagPosition(userMode);
 			}
 			else
 			{
-				mode = UTIL_GetNextUserMode(INDEXENT2(CurrentPlayerIndex)->v.iuser1, userMode);
+				mode = Util::GetNextUserMode(TypeConversion.id_to_edict(CurrentPlayerIndex)->v.iuser1, userMode);
 			}
 		}
 	}
 
-#if defined(WIN32) || defined(__APPLE__)
+#if defined(KE_WINDOWS) || defined(KE_MACOSX)
 
 	DETOUR_MEMBER_CALL(Observer_SetMode)(mode);
 
-#elif defined(__linux__)
+#elif defined(KE_LINUX)
 
 	ObserverSetModeDetour->DisableDetour();
-	((void(*)(void*, int))FuncSetMode2)((void *)pvPlayer, mode);
+	SetModePart2(reinterpret_cast<void*>(pvPlayer), mode);
 	ObserverSetModeDetour->EnableDetour();
 
 #endif
 
-	g_pengfuncsTable->pfnCVarGetFloat = NULL;
+	g_pengfuncsTable->pfnCVarGetFloat = nullptr;
 }
 
 /**
@@ -113,7 +120,7 @@ DETOUR_DECL_MEMBER1(Observer_SetMode, void, int, mode)
  */
 DETOUR_DECL_MEMBER2(Observer_IsValidTarget, void*, int, index, bool, checkteam)
 {
-	if (checkteam && CvarFreeLookEnable->value && UTIL_IsAdmin(UTIL_PrivateToIndex((const void *)this)))
+	if (checkteam && amx_adminfreelook.value > 0.0f && Util::IsAdmin(TypeConversion.cbase_to_id(reinterpret_cast<void*>(this))))
 	{
 		checkteam = false;
 	}
@@ -123,77 +130,65 @@ DETOUR_DECL_MEMBER2(Observer_IsValidTarget, void*, int, index, bool, checkteam)
 
 
 
-void EnableDetours()
+void InitDetours()
 {
-	void *funcIsvalidTarget = UTIL_FindAddressFromEntry(FUNC_ISVALIDTARGET, FUNC_IDENT_HIDDEN_STATE);
-	void *funcSetMode       = UTIL_FindAddressFromEntry(FUNC_SETMODE, FUNC_IDENT_HIDDEN_STATE);
+	IsValidTargetDetour   = DETOUR_CREATE_MEMBER_FIXED(Observer_IsValidTarget, Util::FindAddress(FUNC_ISVALIDTARGET));
+	ObserverSetModeDetour = DETOUR_CREATE_MEMBER_FIXED(Observer_SetMode      , Util::FindAddress(FUNC_SETMODE));
 
-#if defined(__linux__)
-	FuncSetMode2 = UTIL_FindAddressFromEntry(FUNC_SETMODE2, FUNC_IDENT_HIDDEN_STATE);
-#endif
+#if defined(KE_LINUX)
 
-	IsValidTargetDetour   = DETOUR_CREATE_MEMBER_FIXED(Observer_IsValidTarget, funcIsvalidTarget);
-	ObserverSetModeDetour = DETOUR_CREATE_MEMBER_FIXED(Observer_SetMode, funcSetMode);
-	
-#if defined(__linux__) 
-	if (ObserverSetModeDetour != NULL && IsValidTargetDetour != NULL && FuncSetMode2 != NULL)
-#elif defined(WIN32) || defined(__APPLE__)
-	if (ObserverSetModeDetour != NULL && IsValidTargetDetour != NULL)
-#endif
+	void SetModePart2Address = Util::FindAddress(FUNC_SETMODE2);
+
+	if (ObserverSetModeDetour && IsValidTargetDetour && SetModePart2Address)
 	{
+		SetModePart2 = reinterpret_cast<SetModePart2Fn>(SetModePart2Address);
+
+#elif defined(KE_WINDOWS) || defined(KE_MACOSX)
+
+	if (ObserverSetModeDetour && IsValidTargetDetour)
+	{
+#endif
 		IsValidTargetDetour->EnableDetour();
 		ObserverSetModeDetour->EnableDetour();
 	}
 	else
 	{
-		if (!funcIsvalidTarget)
+		if (!IsValidTargetDetour)
 		{
-			ErrorLog.append(ke::AString("CBasePlayer::Observer_IsValidTarget cound not be found."));
+			ErrorLogs.append("CBasePlayer::Observer_IsValidTarget is not available.");
 		}
 
-		if (!funcSetMode)
+		if (!ObserverSetModeDetour)
 		{
-			ErrorLog.append(ke::AString("CBasePlayer::Observer_SetMode cound not be found."));
+			ErrorLogs.append("CBasePlayer::Observer_SetMode is not available.");
 		}
 
-	#if defined(__linux__)
-		if (!FuncSetMode2)
+	#if defined(KE_LINUX)
+
+		if (!SetModePart2Address)
 		{
-			ErrorLog.append(ke::AString("CBasePlayer::Observer_SetMode (second part) cound not be found"));
+			ErrorLogs.append("CBasePlayer::Observer_SetMode (second part) is not available.");
 		}
 	#endif
 
-		if (ObserverSetModeDetour == NULL || IsValidTargetDetour == NULL)
-		{
-			ErrorLog.append(ke::AString("Observer forwards could not be initialized -Disabled module."));
-		}
+		ErrorLogs.append("Some functions are not availble, module has been disabled.");
+
+		DestroyDetours();
 	}
 }
 
-void DisableDetours()
+void DestroyDetours()
 {
 	if (IsValidTargetDetour)
 	{
 		IsValidTargetDetour->Destroy();
+		IsValidTargetDetour = nullptr;
 	}
 
 	if (ObserverSetModeDetour)
 	{
 		ObserverSetModeDetour->Destroy();
+		ObserverSetModeDetour = nullptr;
 	}
-}
-
-void LogOnError()
-{
-	if (!ErrorLog.empty())
-	{
-		for (size_t i = 0; i < ErrorLog.length(); ++i)
-		{
-			MF_Log(ErrorLog[i].chars());
-		}
-
-		ErrorLog.clear(); // Outputs error one time in log.
-	}
-
 }
 

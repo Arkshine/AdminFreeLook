@@ -77,7 +77,7 @@
 // Meta query
 //#define FN_META_QUERY OnMetaQuery
 // Meta attach
-#define FN_META_ATTACH OnMetaAttach
+//#define FN_META_ATTACH OnMetaAttach
 // Meta dettach
 //#define FN_META_DETACH OnMetaDetach
 

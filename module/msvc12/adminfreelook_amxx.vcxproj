@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -20,13 +20,13 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -64,7 +64,6 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <AdditionalIncludeDirectories>\;..\;..\include;..\public;..\..\module;..\..\public\amtl;..\..\public\memtools;..\..\public\sdk;$(METAMOD)\metamod;$(HLSDK)\common;$(HLSDK)\engine;$(HLSDK)\dlls;$(HLSDK)\pm_shared;$(HLSDK)\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;HAVE_STDINT_H;NDEBUG;_WINDOWS;_USRDLL;ADMINFREELOOK_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -75,6 +74,7 @@
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
+      <AdditionalIncludeDirectories>\;..\;..\include;..\public;..\..\module;..\..\..\amxmodx\public;..\..\..\amxmodx\public\amtl;..\..\..\amxmodx\public\memtools;..\..\..\amxmodx\public\sdk;$(METAMOD)\metamod;$(HLSDK)\common;$(HLSDK)\engine;$(HLSDK)\dlls;$(HLSDK)\pm_shared;$(HLSDK)\public;C:\Program Files (x86)\Visual Leak Detector\include</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -109,7 +109,6 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\;..\include;..\..\public;..\..\module;..\..\public\amtl;..\..\public\memtools;..\..\public\sdk;$(METAMOD)\metamod;$(HLSDK)\common;$(HLSDK)\engine;$(HLSDK)\dlls;$(HLSDK)\pm_shared;$(HLSDK)\public;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;HAVE_STDINT_H;_DEBUG;_WINDOWS;_USRDLL;ADMINFREELOOK_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -120,6 +119,7 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>\;..\;..\include;..\public;..\..\module;..\..\..\amxmodx\public;..\..\..\amxmodx\public\amtl;..\..\..\amxmodx\public\memtools;..\..\..\amxmodx\public\sdk;$(METAMOD)\metamod;$(HLSDK)\common;$(HLSDK)\engine;$(HLSDK)\dlls;$(HLSDK)\pm_shared;$(HLSDK)\public;C:\Program Files (x86)\Visual Leak Detector\include</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -139,23 +139,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\amxmodx\public\memtools\CDetour\asm\asm.c" />
+    <ClCompile Include="..\..\..\amxmodx\public\memtools\CDetour\detours.cpp" />
+    <ClCompile Include="..\..\..\amxmodx\public\memtools\MemoryUtils.cpp" />
+    <ClCompile Include="..\..\..\amxmodx\public\sdk\amxxmodule.cpp" />
     <ClCompile Include="..\..\module\adminfreelook.cpp" />
     <ClCompile Include="..\module.cpp" />
-    <ClCompile Include="..\..\public\memtools\CDetour\asm\asm.c" />
-    <ClCompile Include="..\..\public\memtools\CDetour\detours.cpp" />
-    <ClCompile Include="..\..\public\memtools\MemoryUtils.cpp" />
-    <ClCompile Include="..\..\public\sdk\amxxmodule.cpp" />
     <ClCompile Include="..\..\module\utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\amxmodx\public\memtools\CDetour\asm\asm.h" />
+    <ClInclude Include="..\..\..\amxmodx\public\memtools\CDetour\detourhelpers.h" />
+    <ClInclude Include="..\..\..\amxmodx\public\memtools\CDetour\detours.h" />
+    <ClInclude Include="..\..\..\amxmodx\public\memtools\MemoryUtils.h" />
+    <ClInclude Include="..\..\..\amxmodx\public\sdk\amxxmodule.h" />
     <ClInclude Include="..\..\module\adminfreelook.h" />
-    <ClInclude Include="..\..\public\memtools\CDetour\asm\asm.h" />
-    <ClInclude Include="..\..\public\memtools\CDetour\detourhelpers.h" />
-    <ClInclude Include="..\..\public\memtools\CDetour\detours.h" />
-    <ClInclude Include="..\..\public\memtools\MemoryUtils.h" />
     <ClInclude Include="..\gamedatas.h" />
     <ClInclude Include="..\moduleconfig.h" />
-    <ClInclude Include="..\..\public\sdk\amxxmodule.h" />
+    <ClInclude Include="..\utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

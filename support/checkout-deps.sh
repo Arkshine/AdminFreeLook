@@ -22,7 +22,7 @@ fi
 checkout ()
 {
   if [ ! -d "$name" ]; then
-    git clone $repo -b $branch $name
+    git clone --recursive $repo -b $branch $name
     if [ -n "$origin" ]; then
       cd $name
       git remote rm origin
@@ -36,6 +36,12 @@ checkout ()
     cd ..
   fi
 }
+
+name=amxmodx
+branch=master
+repo="https://github.com/alliedmodders/amxmodx"
+origin=
+checkout
 
 name=metamod-am
 branch=master
@@ -62,7 +68,7 @@ if [ $? -eq 1 ]; then
     python setup.py install
   else
     python setup.py build
-    echo "About to install AMBuild - press Ctrl+C to abort, otherwise enter your password for sudo."
-    sudo python setup.py install
+    echo "Installing AMBuild at the user level. Location can be: ~/.local/bin"
+    python setup.py install --user
   fi
 fi

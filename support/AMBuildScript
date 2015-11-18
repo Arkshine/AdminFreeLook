@@ -208,10 +208,10 @@ class AMXXConfig(object):
 
     cfg.includes += [os.path.join(builder.buildPath , '..', 'includes')]
     cfg.includes += [os.path.join(builder.sourcePath, '..', 'module')]
-    cfg.includes += [os.path.join(builder.sourcePath, '..', 'public')]
-    cfg.includes += [os.path.join(builder.sourcePath, '..', 'public', 'sdk')]
-    cfg.includes += [os.path.join(builder.sourcePath, '..', 'public', 'amtl')]
-    cfg.includes += [os.path.join(builder.sourcePath, '..', 'public', 'memtools')]
+    cfg.includes += [os.path.join(builder.sourcePath, '..', '..', 'amxmodx', 'public')]
+    cfg.includes += [os.path.join(builder.sourcePath, '..', '..', 'amxmodx', 'public', 'sdk')]
+    cfg.includes += [os.path.join(builder.sourcePath, '..', '..', 'amxmodx', 'public', 'amtl')]
+    cfg.includes += [os.path.join(builder.sourcePath, '..', '..', 'amxmodx', 'public', 'memtools')]
     return
 
   #
@@ -312,13 +312,13 @@ AMXX.configure()
 binary = AMXX.MetaModule(builder, 'adminfreelook')
 
 binary.sources = [
-  '../public/sdk/amxxmodule.cpp',
+  '../../amxmodx/public/sdk/amxxmodule.cpp',
+  '../../amxmodx/public/memtools/MemoryUtils.cpp',
+  '../../amxmodx/public/memtools/CDetour/detours.cpp',
+  '../../amxmodx/public/memtools/CDetour/asm/asm.c',
   '../module/module.cpp',
   '../module/adminfreelook.cpp',
   '../module/utils.cpp',
-  '../public/memtools/MemoryUtils.cpp',
-  '../public/memtools/CDetour/detours.cpp',
-  '../public/memtools/CDetour/asm/asm.c'
 ]
 
 builder.Add(binary)

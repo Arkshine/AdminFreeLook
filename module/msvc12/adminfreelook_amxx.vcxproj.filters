@@ -2,44 +2,47 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\..\module\adminfreelook.cpp" />
-    <ClCompile Include="..\..\public\sdk\amxxmodule.cpp">
-      <Filter>Module SDK\SDK Base</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\module\utils.cpp" />
-    <ClCompile Include="..\..\public\memtools\MemoryUtils.cpp">
+    <ClCompile Include="..\module.cpp" />
+    <ClCompile Include="..\..\..\amxmodx\public\memtools\MemoryUtils.cpp">
       <Filter>Memtools</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\public\memtools\CDetour\detours.cpp">
+    <ClCompile Include="..\..\..\amxmodx\public\memtools\CDetour\detours.cpp">
       <Filter>Memtools\CDetour</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\public\memtools\CDetour\asm\asm.c">
+    <ClCompile Include="..\..\..\amxmodx\public\memtools\CDetour\asm\asm.c">
       <Filter>Memtools\CDetour\asm</Filter>
     </ClCompile>
-    <ClCompile Include="..\module.cpp" />
+    <ClCompile Include="..\..\..\amxmodx\public\sdk\amxxmodule.cpp">
+      <Filter>Module SDK\SDK Base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\public\sdk\amxxmodule.h">
-      <Filter>Module SDK\SDK Base</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\module\adminfreelook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\moduleconfig.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\public\memtools\MemoryUtils.h">
+    <ClInclude Include="..\gamedatas.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\amxmodx\public\memtools\MemoryUtils.h">
       <Filter>Memtools</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\public\memtools\CDetour\detours.h">
+    <ClInclude Include="..\..\..\amxmodx\public\memtools\CDetour\detourhelpers.h">
       <Filter>Memtools\CDetour</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\public\memtools\CDetour\detourhelpers.h">
+    <ClInclude Include="..\..\..\amxmodx\public\memtools\CDetour\detours.h">
       <Filter>Memtools\CDetour</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\public\memtools\CDetour\asm\asm.h">
+    <ClInclude Include="..\..\..\amxmodx\public\memtools\CDetour\asm\asm.h">
       <Filter>Memtools\CDetour\asm</Filter>
     </ClInclude>
-    <ClInclude Include="..\gamedatas.h">
+    <ClInclude Include="..\..\..\amxmodx\public\sdk\amxxmodule.h">
+      <Filter>Module SDK\SDK Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
