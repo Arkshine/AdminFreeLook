@@ -1,6 +1,6 @@
 AdminFreeLook
 =============
-[![Build Status](https://travis-ci.org/Arkshine/AdminFreeLook.svg?branch=master)](https://travis-ci.org/Arkshine/AdminFreeLook) [![Build status](https://ci.appveyor.com/api/projects/status/gyd7556y6dqr80e3/branch/master?svg=true)](https://ci.appveyor.com/project/Arkshine/adminfreelook/branch/master)
+[![GitHub version](https://badge.fury.io/gh/Arkshine%2FAdminFreeLook.svg)](https://badge.fury.io/gh/Arkshine%2FAdminFreeLook) [![Build Status](https://travis-ci.org/Arkshine/AdminFreeLook.svg?branch=master)](https://travis-ci.org/Arkshine/AdminFreeLook) [![Build status](https://ci.appveyor.com/api/projects/status/gyd7556y6dqr80e3/branch/master?svg=true)](https://ci.appveyor.com/project/Arkshine/adminfreelook/branch/master)
 
 
 AMX Mod X module whichs allows spectating admins to use any camera modes whatever `mp_forcecamera` or `mp_forcechasecam` value.
