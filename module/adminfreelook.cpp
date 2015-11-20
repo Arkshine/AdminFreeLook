@@ -151,7 +151,7 @@ void InitDetours()
 
 #if defined(KE_LINUX)
 
-	void SetModePart2Address = Util::FindAddress(FUNC_SETMODE2);
+	void *SetModePart2Address = Util::FindAddress(FUNC_SETMODE2);
 
 	if (ObserverSetModeDetour && IsValidTargetDetour && SetModePart2Address)
 	{
