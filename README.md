@@ -84,7 +84,8 @@ Rewritten to be used after Steam February update.
   
 ##Installation
 
-1. From [Releases section](https://github.com/Arkshine/AdminFreeLook/releases/latest), get the binary file:  <table>
+0. Stop your server whatever it's your first install or just updating.
+1. From [Releases section](https://github.com/Arkshine/AdminFreeLook/releases/latest), get the binary file you need:  <table>
   <tbody>
     <tr>
       <th align="center">OS</th>
@@ -101,5 +102,6 @@ Rewritten to be used after Steam February update.
 2. Upload it in your *amxmodx/modules/* folder.
 3. Open your *configs/modules.ini* and add at the end `adminfreelook`
 4. Configure `mp_forcechasecam` and `mp_forcecamera` gameplay cvars. Both should have the same value.
+5. Make sure `mp_fadetoblack` is set to 0.
 5. Configure `afl_admin_access_flags` and `afl_user_override_mode` modules cvars.
-6. Restart. 
+6. Start your server.
