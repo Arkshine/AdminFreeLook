@@ -18,5 +18,5 @@ before_script:
 script:
   - mkdir build && cd build
   - PATH="~/.local/bin:$PATH"
-  - python ../support/configure.py --enable-optimize
+  - python ../configure.py --enable-optimize --disable-auto-versioning
   - ambuild

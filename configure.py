@@ -11,5 +11,6 @@ run.options.add_option('--enable-optimize', action='store_const', const='1', des
 run.options.add_option('--breakpad-dump', action='store_true', dest='breakpad_dump', default=False, help='Dump and upload breakpad symbols')
 run.options.add_option('--metamod', type='string', dest='metamod_path', default='../../metamod-am', help='Path to Metamod source code')
 run.options.add_option('--hlsdk', type='string', dest='hlsdk_path', default='../../hlsdk', help='Path to the HLSDK')
+run.options.add_option('--disable-auto-versioning', action='store_true', dest='disable_auto_versioning', default=False, help='Disable the auto versioning script')
 
 run.Configure()
