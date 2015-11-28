@@ -65,5 +65,13 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{237abef9-cb3c-4928-bd15-3e352e2bfe69}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{3c765e81-fd35-4a0b-b78b-12937054349c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\version.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

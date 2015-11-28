@@ -1,0 +1,23 @@
+# vim: set sts=2 ts=8 sw=2 tw=99 et ft=python:
+import os.path
+
+binary = Module.MetaModule(builder, 'adminfreelook')
+
+binary.compiler.defines += [
+  'HAVE_STDINT_H',
+]
+
+binary.sources = [
+  '../../amxmodx/public/sdk/amxxmodule.cpp',
+  '../../amxmodx/public/memtools/MemoryUtils.cpp',
+  '../../amxmodx/public/memtools/CDetour/detours.cpp',
+  '../../amxmodx/public/memtools/CDetour/asm/asm.c',
+  'module.cpp',
+  'adminfreelook.cpp',
+  'utils.cpp',
+]
+
+if builder.target_platform == 'windows':
+  binary.sources += ['version.rc']
+
+builder.Add(binary)

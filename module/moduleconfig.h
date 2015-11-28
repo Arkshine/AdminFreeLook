@@ -3,11 +3,13 @@
 #ifndef __MODULECONFIG_H__
 #define __MODULECONFIG_H__
 
+#include <module_version.h>
+
 // Module info
 #define MODULE_NAME     "Admin Free Look"
-#define MODULE_VERSION  "1.5.5-pre"
+#define MODULE_VERSION  EXTENSION_VERSION
 #define MODULE_AUTHOR   "Arkshine"
-#define MODULE_URL      "https://forums.alliedmods.net/showthread.php?t=100067"
+#define MODULE_URL      "https://github.com/Arkshine/AdminFreeLook/"
 #define MODULE_LOGTAG   "ADMINFREELOOK"
 #define MODULE_LIBRARY  "adminfreelook"
 #define MODULE_LIBCLASS ""

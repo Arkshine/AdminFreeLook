@@ -1,15 +1,34 @@
-
 # vim: set sts=2 ts=8 sw=2 tw=99 et ft=python :
 import os
 import subprocess
 import locale
 
-class AMXXConfig(object):
+class ModuleConfig(object):
   def __init__(self):
     self.metamod_path = None
     self.hlsdk_path = None
+    self.generated_headers = []
+    self.versionlib = None
     self.stdcxx_path = None
-    self.productVersion = '1.5.5-pre'
+
+  def use_auto_versioning(self):
+    if builder.backend != 'amb2':
+      return False
+    return not getattr(builder.options, 'disable_auto_versioning', False)
+
+  def detectProductVersion(self):
+    builder.AddConfigureFile('product.version')
+
+    # For OS X dylib versioning
+    import re
+    with open(os.path.join(builder.sourcePath, 'product.version'), 'r') as fp:
+      productContents = fp.read()
+    m = re.match('(\d+)\.(\d+)\.(\d+).*', productContents)
+    if m == None:
+      self.productVersion = '1.0.0'
+    else:
+      major, minor, release = m.groups()
+      self.productVersion = '{0}.{1}.{2}'.format(major, minor, release)
 
   def detectMetamod(self):
     metamod_path = builder.options.metamod_path
@@ -22,8 +41,9 @@ class AMXXConfig(object):
         raise Exception('Metamod path does not exist: {0}'.format(metamod_path))
     else:
       try_paths = [
-        os.path.join(builder.sourcePath, '..', '..', 'metamod'),
-        os.path.join(builder.sourcePath, '..', '..', 'metamod-am'),
+        os.path.join(builder.sourcePath, '..', 'metamod'),
+        os.path.join(builder.sourcePath, '..', 'metamod-am'),
+        os.path.join(builder.sourcePath, '..', 'metamod-hl1'),
       ]
       for try_path in try_paths:
         if os.path.exists(os.path.join(try_path, 'metamod')):
@@ -43,7 +63,7 @@ class AMXXConfig(object):
         raise Exception('Metamod path does not exist: {0}'.format(hlsdk_path))
     else:
       try_paths = [
-        os.path.join(builder.sourcePath, '..', '..', 'hlsdk'),
+        os.path.join(builder.sourcePath, '..', 'hlsdk'),
       ]
       for try_path in try_paths:
         if os.path.exists(try_path):
@@ -78,6 +98,8 @@ class AMXXConfig(object):
         '-Wno-uninitialized',
         '-Wno-unused',
         '-Wno-switch',
+        '-Wno-format',
+        '-Wno-format-security',
         '-m32',
       ]
       cfg.cxxflags += [
@@ -98,7 +120,7 @@ class AMXXConfig(object):
         if (have_gcc and cxx.version >= '4.7') or (have_clang and cxx.version >= '3'):
           cfg.cxxflags += ['-Wno-delete-non-virtual-dtor']
         if have_gcc and cxx.version >= '4.8':
-          cfg.cflags += ['-Wno-unused-result']
+          cfg.cflags += ['-Wno-unused-result', '-Wno-error=sign-compare']
       if have_clang:
         cfg.cxxflags += ['-Wno-implicit-exception-spec-mismatch']
         if cxx.version >= 'apple-clang-5.1' or cxx.version >= 'clang-3.4':
@@ -106,9 +128,12 @@ class AMXXConfig(object):
         else:
           cfg.cxxflags += ['-Wno-deprecated']
         cfg.cflags += ['-Wno-sometimes-uninitialized']
-
+        if builder.target_platform == 'linux' and cxx.version >= '3.6':
+          cfg.cxxflags += ['-Wno-inconsistent-missing-override']
+          
       if have_gcc:
         cfg.cflags += ['-Wno-parentheses']
+        cfg.c_only_flags += ['-std=c99']
       elif have_clang:
         cfg.cflags += ['-Wno-logical-op-parentheses']
 
@@ -127,7 +152,6 @@ class AMXXConfig(object):
         '_CRT_SECURE_NO_WARNINGS',
         '_CRT_NONSTDC_NO_DEPRECATE',
         '_ITERATOR_DEBUG_LEVEL=0',
-        '_USING_V120_SDK71_',
         'HAVE_STDINT_H',
       ]
       cfg.cflags += [
@@ -178,7 +202,7 @@ class AMXXConfig(object):
     # Platform-specifics
     if builder.target_platform == 'linux':
       cfg.defines += ['_LINUX', 'POSIX', 'LINUX']
-      cfg.postlink += ['-ldl']
+      cfg.postlink += ['-ldl', '-lm']
       if cxx.name == 'gcc':
         cfg.postlink += ['-static-libgcc']
       elif cxx.name == 'clang':
@@ -203,24 +227,31 @@ class AMXXConfig(object):
     cfg.defines += [
       'AMX_NOPROPLIST',
       'PAWN_CELL_SIZE=32',
-      'AMBUILD',
+      'MODULE_USE_VERSIONLIB',
     ]
 
-    cfg.includes += [os.path.join(builder.buildPath , '..', 'includes')]
-    cfg.includes += [os.path.join(builder.sourcePath, '..', 'module')]
-    cfg.includes += [os.path.join(builder.sourcePath, '..', '..', 'amxmodx', 'public')]
-    cfg.includes += [os.path.join(builder.sourcePath, '..', '..', 'amxmodx', 'public', 'sdk')]
-    cfg.includes += [os.path.join(builder.sourcePath, '..', '..', 'amxmodx', 'public', 'amtl')]
-    cfg.includes += [os.path.join(builder.sourcePath, '..', '..', 'amxmodx', 'public', 'memtools')]
+    if self.use_auto_versioning():
+        cfg.defines += ['MODULE_GENERATED_BUILD']
+        cfg.includes += [os.path.join(builder.buildPath, 'includes')]
+        cfg.includes += [os.path.join(builder.sourcePath, 'support', 'versionlib')]
+
+    cfg.includes += [os.path.join(builder.sourcePath, 'module')]
+    cfg.includes += [os.path.join(builder.sourcePath, 'public')]
+    cfg.includes += [os.path.join(builder.sourcePath, '..', 'amxmodx', 'public')]
+    cfg.includes += [os.path.join(builder.sourcePath, '..', 'amxmodx', 'public', 'sdk')]
+    cfg.includes += [os.path.join(builder.sourcePath, '..', 'amxmodx', 'public', 'amtl')]
+    cfg.includes += [os.path.join(builder.sourcePath, '..', 'amxmodx', 'public', 'amtl', 'amtl')]
+    cfg.includes += [os.path.join(builder.sourcePath, '..', 'amxmodx', 'public', 'memtools')]
     return
 
   #
   # Low-level compiler and binary construction.
   #
 
-  def MMCompiler(self, context):
-    compiler = context.compiler.clone()
+  def ConfigureForModule(self, context, compiler):
     compiler.cxxincludes += [
+      os.path.join(context.currentSourcePath),
+      os.path.join(context.currentSourcePath, 'sdk'),
       os.path.join(self.metamod_path, 'metamod'),
       os.path.join(self.hlsdk_path, 'common'),
       os.path.join(self.hlsdk_path, 'dlls'),
@@ -231,46 +262,23 @@ class AMXXConfig(object):
     ]
     return compiler
 
-  def LibraryBuilder(self, context, compiler, name):
-    binary = compiler.Library(name)
-    binary.compiler.cxxincludes += [os.path.join(context.currentSourcePath)]
+  def AddVersioning(self, binary):
     if builder.target_platform == 'windows':
       binary.compiler.rcdefines += [
         'BINARY_NAME="{0}"'.format(binary.outputFile),
-        'AMBUILD',
         'RC_COMPILE',
       ]
+      if self.use_auto_versioning():
+        binary.compiler.rcdefines += ['MODULE_USE_VERSIONLIB']
     elif builder.target_platform == 'mac':
-      binary.compiler.postlink += [
-        '-compatibility_version', '1.0.0',
-        '-current_version', self.productVersion
-      ]
-    #binary.compiler.linkflags += [self.versionlib]
-    #binary.compiler.sourcedeps += AMXX.generated_headers
-    return binary
-
-  def ModuleBuilder(self, context, compiler, name):
-    compiler.cxxincludes += [
-      os.path.join(context.currentSourcePath, 'sdk'),
-    ]
-
-    if builder.target_platform == 'mac' or builder.target_platform == 'windows':
-      name = name + '_amxx'
-    elif builder.target_platform == 'linux':
-      name = name + '_amxx_i386'
-
-    return self.LibraryBuilder(context, compiler, name)
-
-  def ProgramBuilder(self, context, compiler, name):
-    binary = compiler.Program(name)
-    binary.compiler.cxxincludes += [os.path.join(context.currentSourcePath)]
-    if builder.target_platform == 'windows':
-      binary.compiler.rcdefines += [
-        'BINARY_NAME="{0}"'.format(binary.outputFile),
-        'AMBUILD',
-        'RC_COMPILE',
-      ]
-
+      if binary.type == 'library':
+        binary.compiler.postlink += [
+          '-compatibility_version', '1.0.0',
+          '-current_version', self.productVersion
+        ]
+    if self.use_auto_versioning():
+      binary.compiler.linkflags += [self.versionlib]
+      binary.compiler.sourcedeps += Module.generated_headers
     return binary
 
   #
@@ -279,46 +287,39 @@ class AMXXConfig(object):
   #
 
   def Library(self, context, name):
-    compiler = context.compiler.clone()
-    return self.LibraryBuilder(context, compiler, name)
+    binary = context.compiler.Library(name)
+    return self.AddVersioning(binary)
 
   def MetaPlugin(self, context, name):
-    compiler = self.MMCompiler(context)
-
     if builder.target_platform == 'mac' or builder.target_platform == 'windows':
       name = name + '_mm'
     elif builder.target_platform == 'linux':
       name = name + '_mm_i386'
-
-    return self.LibraryBuilder(context, compiler, name)
-
-  def Module(self, context, name):
-    compiler = context.compiler.clone()
-    return self.ModuleBuilder(context, compiler, name)
+    binary = context.compiler.Library(name)
+    self.ConfigureForModule(context, binary.compiler)
+    return self.AddVersioning(binary)
 
   def MetaModule(self, context, name):
-    compiler = self.MMCompiler(context)
-    return self.ModuleBuilder(context, compiler, name)
+    if builder.target_platform == 'mac' or builder.target_platform == 'windows':
+      name = name + '_amxx'
+    elif builder.target_platform == 'linux':
+      name = name + '_amxx_i386'
+    binary = context.compiler.Library(name)
+    self.ConfigureForModule(context, binary.compiler)
+    return self.AddVersioning(binary)
 
   def Program(self, context, name):
-    compiler = context.compiler.clone()
-    return self.ProgramBuilder(context, compiler, name)
+    binary = context.compiler.Program(name)
+    return self.AddVersioning(binary)
 
-AMXX = AMXXConfig()
-AMXX.detectMetamod()
-AMXX.detectHlsdk()
-AMXX.configure()
+Module = ModuleConfig()
+Module.detectProductVersion()
+Module.detectMetamod()
+Module.detectHlsdk()
+Module.configure()
 
-binary = AMXX.MetaModule(builder, 'adminfreelook')
+if Module.use_auto_versioning():
+  Module.generated_headers = builder.RunScript('support/Versioning', { 'Module': Module })
+  Module.versionlib = builder.RunScript('support/versionlib/AMBuilder', { 'Module': Module })
 
-binary.sources = [
-  '../../amxmodx/public/sdk/amxxmodule.cpp',
-  '../../amxmodx/public/memtools/MemoryUtils.cpp',
-  '../../amxmodx/public/memtools/CDetour/detours.cpp',
-  '../../amxmodx/public/memtools/CDetour/asm/asm.c',
-  '../module/module.cpp',
-  '../module/adminfreelook.cpp',
-  '../module/utils.cpp',
-]
-
-builder.Add(binary)
+builder.RunScript('module/AMBuilder', { 'Module': Module })
