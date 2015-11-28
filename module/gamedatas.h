@@ -15,6 +15,7 @@
 	#define FUNC_ISVALIDTARGET      "\\x8B\\x2A\\x2A\\x2A\\x56\\x8B\\x2A\\x8B\\x2A\\x2A\\x2A\\x2A\\x2A\\x3B"
 
 	#define m_hObserverTarget       392
+	#define m_iTeam                 456
 
 #elif defined(KE_LINUX)
 
@@ -23,6 +24,7 @@
 	#define FUNC_ISVALIDTARGET      "_ZN11CBasePlayer22Observer_IsValidTargetEib"
 
 	#define m_hObserverTarget       412
+	#define m_iTeam                 476
 
 #elif defined(KE_MACOSX)
 
@@ -30,6 +32,7 @@
 	#define FUNC_ISVALIDTARGET      "_ZN11CBasePlayer22Observer_IsValidTargetEib"
 
 	#define m_hObserverTarget       412
+	#define m_iTeam                 476
 
 #endif
 
@@ -44,5 +47,10 @@
 #define FORCECAMERA_SPECTATE_ANYONE      0
 #define FORCECAMERA_SPECTATE_ONLY_TEAM   1
 #define FORCECAMERA_ONLY_FRIST_PERSON    2
+
+#define TEAM_UNASSIGNED 0
+#define TEAM_TERRORIST  1
+#define TEAM_CT         2
+#define TEAM_SPECTATOR  3
 
 #endif // _GAMEDATAS_H_

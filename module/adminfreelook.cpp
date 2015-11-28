@@ -119,18 +119,15 @@ DETOUR_DECL_MEMBER2(Observer_IsValidTarget, void*, int, index, bool, checkteam)
 {
 	if (Util::ShouldRunCode())
 	{
-		auto isAdmin = Util::IsAdmin(TypeConversion.cbase_to_edict(reinterpret_cast<void*>(this)));
+		auto pPlayer = reinterpret_cast<void*>(this);
 
-		if (isAdmin)
+		if (checkteam && Util::IsAdmin(TypeConversion.cbase_to_edict(pPlayer)))
 		{
-			if (checkteam)
-			{
-				checkteam = false;
-			}
+			checkteam = false; // We are admin and any targets are valid.
 		}
-		else if (!checkteam && Util::GetUserMode())
+		else if (!checkteam && Util::GetUserMode() && get_pdata<int>(pPlayer, m_iTeam) != TEAM_SPECTATOR)
 		{
-			checkteam = true;
+			checkteam = true;  // We override normal users mode and target should be always a teammate.
 		}
 
 		if (g_pengfuncsTable->pfnCVarGetFloat)
